@@ -7,28 +7,31 @@ import rateLimit from "express-rate-limit";
 import {router} from '../routes'
 // import xss from "xss-clean";
 // import compression from 'compression'
-import { connectToMongo } from "../db/conn";
-connectToMongo();
+import cookieParser  from 'cookie-parser'
+import env from '../utils/validateEnv'
+import { errorHandler } from "../middleware/error.middleware";
 
 const app = express();
 
 app.use(
   cors({
-    origin: "*",
+    origin: env.CORS_ORIGIN,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
 );
 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true,limit : "16kb" }));
 
-app.use(express.json())
+app.use(express.json({limit : "16kb"}))
 
 app.use(morgan("dev"));
 
 app.use(helmet());
 
 app.use(mongosanitize());
+
+app.use(cookieParser())
 
 // app.use(xss())
 
@@ -43,5 +46,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use(router)
+
+app.use(errorHandler)
 
 export default app

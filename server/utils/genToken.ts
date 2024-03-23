@@ -8,8 +8,13 @@ import { Types } from "mongoose";
  */
 
 const genToken = (id : Types.ObjectId | undefined) => {
+
+  if (!id) {
+    throw new Error("User ID is undefined");
+  }
+
   const jwtOptions = {
-    expiresIn: "7d", // Token expires in 1 day
+    expiresIn: "7d", // Token expires in 7 day
   };
   const token = jwt.sign({ id }, env.JWT_SECRET, jwtOptions);
   return token;
