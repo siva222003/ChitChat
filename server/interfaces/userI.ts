@@ -8,6 +8,7 @@ export interface IUser {
     email: string;
     password: string;
     verified : boolean
+    refreshToken : string
     passwordResetToken: string | undefined;
     passwordResetExpires: number | undefined;
     passwordChangedAt : Date

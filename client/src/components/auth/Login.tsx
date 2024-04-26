@@ -2,16 +2,15 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { LoginFormTypes, loginSchema } from "../../types/auth.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "../../providers/AuthProvider";
-import { useMutation } from "@tanstack/react-query";
-import { Navigate, useNavigate } from "react-router-dom";
-import { HOME_ROUTE } from "../../utils/constants";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate } from "react-router-dom";
+import { FORGOT_PASSWORD_ROUTE, HOME_ROUTE } from "../../utils/constants";
 import { AxiosError } from "axios";
-
+import AuthLoader from "../ui/loaders/AuthLoader";
 
 const Login = () => {
-
-  const navigate = useNavigate()
-
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -21,20 +20,24 @@ const Login = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const {mutate,isPending,isError,error} = useMutation({
+  const { mutate, isPending, isError } = useMutation({
     mutationFn: login,
-    onSuccess : (data) => {
-      localStorage.setItem("token",data.data.token)
-      navigate(HOME_ROUTE)    
+    onSuccess: (data) => {
+      localStorage.setItem("accessToken", data.data.accessToken || "");
+      queryClient.invalidateQueries(["user"]);
+      navigate(HOME_ROUTE);
     },
     onError: (err: AxiosError) => {
-      console.error("Error from server:", (err.response?.data as Error).message);
+      console.error(
+        "Error from server:",
+        (err.response?.data as Error).message
+      );
     },
-  })
+  });
 
   const onSubmit: SubmitHandler<LoginFormTypes> = (data) => {
     console.log(data);
-    mutate(data)
+    mutate(data);
   };
 
   return (
@@ -57,8 +60,10 @@ const Login = () => {
               placeholder="name@yahoo.com"
               {...register("email")}
               autoComplete="email"
-              className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-[#1964FF] sm:text-sm sm:leading-6 px-2"
-            /> 
+              className={`block w-full rounded-md border-0 py-2
+               ${isError ? "ring-red-500" : "ring-gray-300"}
+               text-gray-900 shadow-sm ring-1 ring-inset  placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-[#1964FF] sm:text-sm sm:leading-6 px-2`}
+            />
           </div>
           {errors.email && (
             <p className="my-2 text-sm text-red-500">{errors.email.message}</p>
@@ -74,12 +79,12 @@ const Login = () => {
               Password<span className="text-red-500">*</span>
             </label>
             <div className="text-sm">
-              <a
-                href="#"
+              <Link
+                to={FORGOT_PASSWORD_ROUTE}
                 className="font-semibold text-[#1964FF] hover:text-indigo-500"
               >
                 Forgot password?
-              </a>
+              </Link>
             </div>
           </div>
           <div className="mt-1">
@@ -88,7 +93,9 @@ const Login = () => {
               placeholder="test123"
               {...register("password")}
               type="password"
-              className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-[#1964FF] sm:text-sm sm:leading-6 px-2"
+              className={`block w-full 
+              ${isError ? "ring-red-500" : "ring-gray-300"}
+              rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-[#1964FF] sm:text-sm sm:leading-6 px-2`}
             />
           </div>
           {errors.password && (
@@ -99,12 +106,18 @@ const Login = () => {
         </div>
 
         <div>
+          {isError && (
+            <p className="text-sm text-red-500">
+              Email or password is incorrect.Please try again
+            </p>
+          )}
+
           <button
             type="submit"
             disabled={isSubmitting}
             className="flex w-full justify-center rounded-md bg-[#1964FF] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-6"
           >
-            {isPending ? "Processing..." : "Log in"}
+            {isPending ? <AuthLoader /> : "Log in"}
           </button>
         </div>
       </form>

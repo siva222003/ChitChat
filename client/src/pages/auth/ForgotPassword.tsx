@@ -1,5 +1,5 @@
-import logoSvg from "../assets/images/logo.svg";
-import ForgotPasswordComponent from '../components/auth/ForgotPassword'
+import logoSvg from "../../assets/images/logo.svg";
+import ForgotPasswordComponent from '../../components/auth/ForgotPassword'
 
 
 const ForgotPassword = () => {

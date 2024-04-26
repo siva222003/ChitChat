@@ -8,3 +8,20 @@ export const STATUS_UNAUTHORIZED = 401
 export const STATUS_NOT_FOUND = 404
 export const STATUS_CONFLICT = 409
 export const STATUS_SERVER_ERROR = 500
+
+
+/**
+ * @SOCKET_EVENTS
+ * 
+ */
+
+export const CONNECTION = "connection"
+export const DISCONNECT = "disconnect"
+export const SETUP = "setup"
+export const CHAT_MESSAGE = "chat message"
+export const FRIEND_REQUEST = "friend request"
+export const START_TYPING = "start typing"
+export const STOP_TYPING = "stop typing"
+
+
+

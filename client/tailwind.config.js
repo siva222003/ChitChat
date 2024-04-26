@@ -7,8 +7,16 @@ export default {
   theme: {
     extend: {
       fontFamily : {
-        poppins : 'Poppins'
-      }
+        poppins : 'Poppins',
+        manrope : 'Manrope',
+      },
+      backgroundColor: { 
+        messageRight: '#5B96F7',
+        messageBg: '#F0F4FA',
+      },
+      textColor: {
+        messageRight: '#696969',
+      },
     },
   },
   plugins: [],

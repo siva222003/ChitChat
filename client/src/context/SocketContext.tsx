@@ -1,14 +1,13 @@
 import { createContext } from "react";
-import socketio from "socket.io-client";
 
 type SocketContextType = {
-  socket: ReturnType<typeof socketio> | null;
-  isOnline: boolean;
+  onlineUsers: string[];
+  setOnlineUsers: React.Dispatch<React.SetStateAction<string[]>>
 };
 
 const SocketContextValue = {
-  socket: null,
-  isOnline: false,
+  onlineUsers: [],
+  setOnlineUsers: () => {}
 };
 
 const SocketContext = createContext<SocketContextType>(SocketContextValue);

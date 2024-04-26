@@ -1,60 +1,45 @@
 import jwt from "jsonwebtoken";
 import env from "../utils/validateEnv";
 import { NextFunction, Request, Response } from "express";
+import { User } from "../models/index";
+import { ApiError } from "../utils/ApiError";
+import { asyncHandler } from "../utils/asyncHandler";
 import { IJWT_PAYLOAD } from "../interfaces/tokenI";
-import { User } from "../models";
 
-//MIDDLEWARE FOR CHECKING WHETHER THE TOKEN IS PRESENT AND VALID AND NOT EXPIRED
+export const verify = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const webToken = req.headers.auth as string;
+    const JWT_SECRET = env.JWT_SECRET;
 
-export const verify = (req: Request, res: Response, next: NextFunction) => {
-  const webToken = req.headers.auth as string;
-  const JWT_SECRET = env.JWT_SECRET;
+    if (!webToken) {
+      throw new ApiError(400, "Couldn't find the token");
+    }
 
-  if (!webToken) {
-    return res.status(400).json({ error: "Couldn't find the token" });
-  }
+    const [bearer, token] = webToken.split(" ");
 
-  const [bearer, token] = webToken.split(" ");
-  
-  if (bearer !== "Bearer" || !token) {
-    return res.status(401).json({ message: "Invalid token format" });
-  }
-  jwt.verify(token, JWT_SECRET, async (err, decoded) => {
-    if (err) {
-      console.log(err)
-      // Token is invalid or expired
-      if (err.name === "TokenExpiredError") {
-        return res
-          .status(401)
-          .json({ message: "Token expired. Please log in again." });
+    if (bearer !== "Bearer" || !token) {
+      throw new ApiError(401, "Invalid token format");
+    }
+
+    jwt.verify(token, JWT_SECRET, async (err, decoded) => {
+      if (err) {
+        console.log(err);
+        // Token is invalid or expired
+        if (err.name === "TokenExpiredError") {
+          throw new ApiError(401, "Token expired. Please log in again.");
+        }
+        throw new ApiError(401, "Invalid token. Please provide a valid token.");
       }
-      return res
-        .status(401)
-        .json({ message: "Invalid token. Please provide a valid token." });
 
-    }
-    const decodedUser = decoded as IJWT_PAYLOAD;
+      const decodedUser = decoded as IJWT_PAYLOAD;
+      const user = await User.findById(decodedUser.id);
 
-    const user = await User.findById(decodedUser.id);
+      if (!user) {
+        throw new ApiError(400, "User doesn't exist");
+      }
 
-    if (!user) {
-      res.status(400).json({
-        status: "error",
-        message: "User doesn't exist",
-      });
-
-      return;
-    }
-
-    // if (user.passwordChangedAfter((decodedUser.iat)!)) {
-    //  return res.status(400).json({
-    //     status: "error",
-    //     message: "Password has been updated recently.Please login again",
-    //   });
-    // }
-
-    req.userId = decodedUser.id;
-
-    next();
-  });
-};
+      req.userId = decodedUser.id;
+      next();
+    });
+  }
+);

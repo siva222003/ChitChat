@@ -4,19 +4,22 @@ import {
   FORGOT_PASSWORD_ROUTE,
   HOME_ROUTE,
   LOGIN_ROUTE,
+  NOT_FOUND_ROUTE,
+  RESET_PASSWORD_EMAIL_SENT_ROUTE,
   RESET_PASSWORD_ROUTE,
   SIGNUP_ROUTE,
   VERIFY_OTP_ROUTE,
 } from "../utils/constants";
 import PrivateRoute from "./Private/PrivateRoute";
 import PublicRoute from "./Public/PublicRoute";
-import Test from "../pages/Test";
+import NotFound from "../components/ui/NotFound";
+import ResetPasswordEmailSent from "../components/ui/auth/ResetPasswordEmailSent";
 const Home = React.lazy(() => import("../pages/Home"));
-const Login = React.lazy(() => import("../pages/Login"));
-const SignUp = React.lazy(() => import("../pages/SignUp"));
-const Otp = React.lazy(() => import("../pages/Otp"));
-const ForgotPassword = React.lazy(() => import("../pages/ForgotPassword"));
-const ResetPassword = React.lazy(() => import("../pages/ResetPassword"));
+const Login = React.lazy(() => import("../pages/auth/Login"));
+const SignUp = React.lazy(() => import("../pages/auth/SignUp"));
+const Otp = React.lazy(() => import("../pages/auth/Otp"));
+const ForgotPassword = React.lazy(() => import("../pages/auth/ForgotPassword"));
+const ResetPassword = React.lazy(() => import("../pages/auth/ResetPassword"));
 
 const Router = () => {
   return (
@@ -76,11 +79,15 @@ const Router = () => {
       />
 
       <Route
-        path='/test'
+        path={RESET_PASSWORD_EMAIL_SENT_ROUTE}
         element={
-            <Test />
+          <PublicRoute>
+            <ResetPasswordEmailSent />
+          </PublicRoute>
         }
       />
+
+      <Route path={NOT_FOUND_ROUTE} element={<NotFound />} />
     </Routes>
   );
 };

@@ -1,5 +1,4 @@
 import { FunnelSimple, MagnifyingGlass } from "phosphor-react";
-import React from "react";
 
 const Search = () => {
   return (

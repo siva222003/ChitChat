@@ -1,7 +1,7 @@
-import SignUpComponent from "../components/auth/SignUp";
-import logoSvg from "../assets/images/logo.svg";
+import SignUpComponent from "../../components/auth/SignUp";
+import logoSvg from "../../assets/images/logo.svg";
 import { Link } from "react-router-dom";
-import { LOGIN_ROUTE } from "../utils/constants";
+import { LOGIN_ROUTE } from "../../utils/constants";
 const SignUp = () => {
   return (
     <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8">

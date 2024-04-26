@@ -5,7 +5,8 @@ import bcrypt from "bcryptjs";
 
 const friendsSchema = new Schema({
     id : {type : Schema.Types.ObjectId,ref : "User"},
-    firstName : String
+    firstName : String,
+    avatar : String
 })
 
 const userSchema = new Schema(
@@ -34,6 +35,9 @@ const userSchema = new Schema(
     verified: {
       type: Boolean,
       default: false,
+    },
+    refreshToken : {
+      type : String
     },
     passwordResetToken: {
       type: String,

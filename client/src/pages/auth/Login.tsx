@@ -1,11 +1,11 @@
-import LoginComponent from '../components/auth/Login'
-import logoSvg from "../assets/images/logo.svg";
+import LoginComponent from '../../components/auth/Login'
+import logoSvg from "../../assets/images/logo.svg";
 import { Link } from 'react-router-dom'
-import { SIGNUP_ROUTE } from '../utils/constants'
+import { SIGNUP_ROUTE } from '../../utils/constants'
 const Login = () => {
   return (
     <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-    <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+    <div className="sm:mx-auto sm:w-full sm:max-w-sm ">
       <img className=" h-10 w-auto" src={logoSvg} alt="Your Company" />
       <h2 className="mt-4 text-2xl font-bold leading-9 tracking-tight text-gray-900">
         Log in

@@ -9,6 +9,9 @@ export const asyncHandler =
     try {
       await fn(req, res, next);
     } catch (error) {
-      next(error)
+      if (!(error instanceof ApiError)) {
+        error = new ApiError(STATUS_SERVER_ERROR, "Some error occurred. Please try again later.");
+      }
+      next(error);
     }
   };

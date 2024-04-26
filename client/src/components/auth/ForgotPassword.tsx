@@ -1,28 +1,56 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-import { LoginFormTypes, loginSchema } from "../../types/auth.types";
+import {
+  ForgotPasswordFormTypes,
+  LoginFormTypes,
+  forgotPasswordSchema,
+  loginSchema,
+} from "../../types/auth.types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
-import { LOGIN_ROUTE } from "../../utils/constants";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import {
+  LOGIN_ROUTE,
+  RESET_PASSWORD_EMAIL_SENT_ROUTE,
+} from "../../utils/constants";
+import { useMutation } from "@tanstack/react-query";
+import { forgotPassword } from "../../providers/AuthProvider";
+import { AxiosError } from "axios";
+import AuthLoader from "../ui/loaders/AuthLoader";
 
 const ForgotPassword = () => {
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors, isSubmitting },
-  // } = useForm<LoginFormTypes>({
-  //   defaultValues: { email: "", password: "" },
-  //   resolver: zodResolver(loginSchema),
-  // });
+  const navigate = useNavigate();
 
-  // const onSubmit: SubmitHandler<LoginFormTypes> = (data) => {
-  //   console.log(data);
-  // };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ForgotPasswordFormTypes>({
+    defaultValues: { email: "" },
+    resolver: zodResolver(forgotPasswordSchema),
+  });
+  const { mutate, isPending, isError } = useMutation({
+    mutationFn: forgotPassword,
+    onSuccess: (data) => {
+      console.log("Successfully sent reset link to email");
+      navigate(RESET_PASSWORD_EMAIL_SENT_ROUTE, { replace: true });
+    },
+    onError: (err: AxiosError) => {
+      console.error(
+        "Error from server:",
+        (err.response?.data as Error).message
+      );
+    },
+  });
+
+  const onSubmit: SubmitHandler<ForgotPasswordFormTypes> = (data) => {
+    console.log(data);
+    mutate(data);
+  };
 
   return (
     <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
       <form
         className="space-y-4"
-        // onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
         method="POST"
       >
         <div>
@@ -36,38 +64,36 @@ const ForgotPassword = () => {
             <input
               id="email"
               placeholder="name@yahoo.com"
-              // {...register("email")}
+              {...register("email")}
               autoComplete="email"
               className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-[#1964FF] sm:text-sm sm:leading-6 px-2"
             />
           </div>
-          {/* {errors.email && (
+          {errors.email && (
             <p className="my-2 text-sm text-red-500">{errors.email.message}</p>
-          )} */}
+          )}
+          {isError && !errors.email && (
+            <p className="text-sm my-2 text-red-500">
+              Email or password is incorrect.Please try again
+            </p>
+          )}
         </div>
 
-       
         <div className="flex gap-2">
           <button
             type="submit"
-            // disabled={isSubmitting}
-            className="flex flex-1 justify-center rounded-md bg-[#1964FF] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-6"
+            disabled={isSubmitting}
+            className="flex flex-1 justify-center rounded-md bg-[#1964FF] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-2"
           >
-            {/* {isSubmitting ? "Processing..." : "Log in"} */}
-            Confirm
-          </button>
-
-          
+            {isPending || isSubmitting ? <AuthLoader /> : "Confirm"}
+          </button>{" "}
+          <Link
+            to={LOGIN_ROUTE}
+            className="flex flex-1 justify-center rounded-md bg-white px-3 py-3 text-sm font-semibold leading-6 text-[#1964FF] border-[1px] border-[#1964FF]  shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-2"
+          >
             {" "}
-            <button
-              type="button"
-              // disabled={isSubmitting}
-              className="flex flex-1 justify-center rounded-md bg-white px-3 py-3 text-sm font-semibold leading-6 text-[#1964FF] border-[1px] border-[#1964FF]  shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-6"
-            >
-              {/* {isSubmitting ? "Processing..." : "Log in"} */}
-              <Link to={LOGIN_ROUTE} className="h-full w-full">Back</Link>
-            </button>
-         
+            <button type="button">Back</button>
+          </Link>
         </div>
       </form>
     </div>
