@@ -140,6 +140,8 @@ export const verifyOtp = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     const { email, otp } = req.body;
 
+    console.log(email, otp)
+
     const user = await User.findOne({
       email,
       otp_expiry_time: { $gt: Date.now() },
@@ -149,7 +151,7 @@ export const verifyOtp = asyncHandler(
       throw new ApiError(STATUS_NOT_FOUND, "Email is invalid or OTP expired");
 
     if (!(await user.correctOtp(user.otp, otp)))
-      throw new ApiError(STATUS_UNAUTHORIZED, "Otp is incorrect");
+      throw new ApiError(STATUS_UNAUTHORIZED, "Otp is incorrect. Please try again");
 
     /*
       Here we can even create an obj with both verified and otp fields and save

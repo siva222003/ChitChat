@@ -7,6 +7,7 @@ import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { VERIFY_OTP_ROUTE } from "../../utils/constants";
 import AuthLoader from "../ui/loaders/AuthLoader";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -26,11 +27,11 @@ const SignUp = () => {
     resolver: zodResolver(registerSchema),
   });
 
-  const { mutate, isPending, isError, error } = useMutation({
+  const { mutate, isPending, isError } = useMutation({
     mutationFn: signup,
     onSuccess: (data) => {
       if (data.success) {
-        console.log("Otp sent successfully");
+        toast.success(data.message);
         navigate(VERIFY_OTP_ROUTE);
       }
     },
@@ -43,8 +44,9 @@ const SignUp = () => {
   });
 
   const onSubmit: SubmitHandler<RegisterFormTypes> = (data) => {
-    console.log(data);
+    console.log("Clicked")
     mutate(data);
+    localStorage.setItem("email", data.email);
   };
 
   return (
@@ -178,7 +180,7 @@ const SignUp = () => {
         <div>
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting  || isPending}
             className="flex w-full justify-center rounded-md bg-[#1964FF] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-6"
           >
             {isPending ? <AuthLoader /> : "Create Account"}

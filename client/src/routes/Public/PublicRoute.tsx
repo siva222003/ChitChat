@@ -11,7 +11,7 @@ type PublicRouteProps = {
 const PublicRoute = ({ children }: PublicRouteProps) => {
   const { isAuthenticated, isLoading } = useAuth();
 
-  console.log("Public Route - is Authenticated", isAuthenticated);
+  // console.log("Public Route - is Authenticated", isAuthenticated);
 
   if (isLoading) return <p>Loading...</p>;
   if (isAuthenticated) return <Navigate to={HOME_ROUTE} />;

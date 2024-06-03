@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+
 import {
   FORGOT_PASSWORD_ROUTE,
   HOME_ROUTE,
@@ -10,10 +11,13 @@ import {
   SIGNUP_ROUTE,
   VERIFY_OTP_ROUTE,
 } from "../utils/constants";
+
 import PrivateRoute from "./Private/PrivateRoute";
 import PublicRoute from "./Public/PublicRoute";
 import NotFound from "../components/ui/NotFound";
 import ResetPasswordEmailSent from "../components/ui/auth/ResetPasswordEmailSent";
+
+
 const Home = React.lazy(() => import("../pages/Home"));
 const Login = React.lazy(() => import("../pages/auth/Login"));
 const SignUp = React.lazy(() => import("../pages/auth/SignUp"));

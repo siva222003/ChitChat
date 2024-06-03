@@ -28,14 +28,15 @@ export const resetPasswordSchema = z
   });
 
 export const otpSchmea = z.object({
-  otp: z.string().min(1),
-});
+  otp: z.string().min(4),
+});0
 
 export type LoginFormTypes = z.infer<typeof loginSchema>;
 export type RegisterFormTypes = z.infer<typeof registerSchema>;
 export type ForgotPasswordFormTypes = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormTypes = z.infer<typeof resetPasswordSchema>;
 export type OtpFormTypes = z.infer<typeof otpSchmea>;
+
 
 export type AuthResponseTypes = {
   statusCode: number;
@@ -52,6 +53,8 @@ export type LoginType = (data: LoginFormTypes) => Promise<AuthResponseTypes>;
 export type RegisterType = (
   data: RegisterFormTypes
 ) => Promise<AuthResponseTypes>;
+
+export type VerifyOtpType = (data: OtpFormTypes) => Promise<AuthResponseTypes>;
 
 export type ForgotPasswordType = (
   data: ForgotPasswordFormTypes

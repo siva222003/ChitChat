@@ -8,3 +8,7 @@ export const sortContacts = () => {
   if(sortedContacts === undefined) return contacts;
   return sortedContacts;
 };
+
+export const isObjectEmpty = (objectName:any) => {
+  return Object.keys(objectName).length === 0 && objectName.constructor === Object;
+}

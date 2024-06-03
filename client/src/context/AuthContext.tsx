@@ -7,16 +7,14 @@ type AuthContextType = {
     isAuthenticated : boolean
     isLoading : boolean
     login: LoginType
-    user : UserType
+    user : UserType | null
 }
 
 const AuthContextValue = {
     isAuthenticated : false,
     isLoading : false,
-    login: async () => loginValue,
     user : null,
-    currentChat : null,
-    setCurrentChat: () => {}
+    login: async () => loginValue,
 }
 
 const AuthContext = createContext<AuthContextType>(AuthContextValue)

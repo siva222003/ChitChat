@@ -1,5 +1,6 @@
 export type Message = string;
 export type Dashboard = DashboardEnum
+
 export type Conversations = {
   name: string;
   content: string;
@@ -17,6 +18,7 @@ export type Contacts = {
     src: string;
   } | undefined;
 
+  
   export enum DashboardEnum {
     Conversations = "Conversations",
     Groups = "Groups",

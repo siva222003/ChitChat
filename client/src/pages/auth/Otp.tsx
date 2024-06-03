@@ -1,24 +1,25 @@
-import React from "react";
-import OtpComponent from "../../components/auth/Otp"; 
+import OtpComponent from '../../components/auth/Otp'
+
+import logoSvg from "../../assets/images/logo.svg";
+import { Link } from 'react-router-dom'
+import { SIGNUP_ROUTE } from '../../utils/constants'
 const Otp = () => {
   return (
-    <div className="relative flex min-h-screen w-full flex-col justify-center overflow-hidden bg-gray-50 py-12">
-      <div className="relative bg-white px-6 pt-10 pb-9 shadow-xl mx-auto w-full max-w-lg rounded-2xl">
-        <div className="mx-auto flex w-full max-w-md flex-col space-y-16">
-          <div className="flex flex-col items-center justify-center text-center space-y-2">
-            <div className="font-semibold text-3xl">
-              <p>Email Verification</p>
-            </div>
-            <div className="flex flex-row text-sm font-medium text-gray-400">
-              <p>We have sent a code to your email ba**@dipainhouse.com</p>
-            </div>
-          </div>
-
-          <OtpComponent />
-        </div>
-      </div>
+    <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="sm:mx-auto sm:w-full sm:max-w-sm ">
+      <img className=" h-10 w-auto" src={logoSvg} alt="Your Company" />
+      <h2 className="mt-4 text-2xl font-bold leading-9 tracking-tight text-gray-900">
+        Verify your account
+      </h2>
+      <p className="mt-2 text-sm leading-5 text-gray-600 max-w">
+        Enter the 4 digit OTP sent to your email address
+      </p>
     </div>
-  );
-};
+    
 
-export default Otp;
+    <OtpComponent />
+  </div>
+  )
+}
+
+export default Otp

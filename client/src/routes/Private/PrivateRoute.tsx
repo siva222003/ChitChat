@@ -11,6 +11,8 @@ type PrivateRouteProps = {
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const { isAuthenticated, isLoading } = useAuth();
 
+  // console.log("Private Route - is Authenticated", isAuthenticated, isLoading);
+
   if (isLoading) return <p>Loading...</p>;
   if (!isAuthenticated) return <Navigate to={LOGIN_ROUTE} />;
 

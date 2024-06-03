@@ -1,15 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
-import { NUMBER_OF_OTP_DIGITS, OTP_INPUT_STYLE } from "../../utils/constants";
-import { OtpFormTypes, otpSchmea } from "../../types/auth.types";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import {  OtpFormTypes, otpSchmea } from "../../types/auth.types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { verifyOtp } from "../../providers/AuthProvider";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {  useNavigate } from "react-router-dom";
+import {  HOME_ROUTE } from "../../utils/constants";
 import { AxiosError } from "axios";
+import AuthLoader from "../ui/loaders/AuthLoader";
+import { isObjectEmpty } from "../../utils/helper";
 
 const Otp = () => {
-  const [otp, setOtp] = useState(new Array(NUMBER_OF_OTP_DIGITS).fill(""));
-  const [resendOtp, setResendOtp] = useState(false);
-  const inputRef = useRef<(HTMLInputElement | null)[]>([]);
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -20,115 +22,73 @@ const Otp = () => {
     resolver: zodResolver(otpSchmea),
   });
 
-  // const { mutate, isPending, isError, error } = useMutation({
-  //   mutationFn: signup,
-  //   onSuccess: (data) => {
-  //     if (data.success) {
-  //       console.log("Otp sent successfully");
-  //       navigate(VERIFY_OTP_ROUTE);
-  //     }
-  //   },
-  //   onError: (err: AxiosError) => {
-  //     console.error(
-  //       "Error from server:",
-  //       (err.response?.data as Error).message
-  //     );
-  //   },
-  // });
-
-  console.log(errors)
+  const { mutate, isPending, isError } = useMutation({
+    mutationFn: verifyOtp,
+    onSuccess: (data) => {
+      localStorage.setItem("accessToken", data.data.accessToken || "");
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      navigate(HOME_ROUTE);
+    },
+    onError: (err: AxiosError) => {
+      console.error(
+        "Error from server:",
+        (err.response?.data as Error).message
+      );
+    },
+  });
 
   const onSubmit: SubmitHandler<OtpFormTypes> = (data) => {
     console.log(data);
-    // mutate(data);
-  };
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>, index: number) {
-    let newArr = [...otp];
-    newArr[index] = e.target.value;
-    setOtp(newArr);
-
-    if (e.target.value && index < NUMBER_OF_OTP_DIGITS - 1) {
-      inputRef.current[index + 1]?.focus();
-    }
-  }
-
-  function handleBackspace(
-    e: React.KeyboardEvent<HTMLInputElement>,
-    index: number
-  ) {
-    if (
-      e.key === "Backspace" &&
-      !(e.target as HTMLInputElement).value &&
-      index > 0
-    ) {
-      inputRef.current[index - 1]?.focus();
-    }
-  }
-
-  const handleResend = () => {
-    setResendOtp(true);
-    setTimeout(() => {
-      setResendOtp(false);
-    }, 5000);
-  };
-
-  useEffect(() => {
-    inputRef.current[0]?.focus();
-  }, []);
-
-  const element = () => {
-    return Array.from({ length: NUMBER_OF_OTP_DIGITS }).map((_, index) => (
-      <div className="w-16 h-16" key={index}>
-        <input
-          className={OTP_INPUT_STYLE}
-          type="text"
-          maxLength={1}
-          id="otp"
-          {...register("otp")}
-          inputMode="numeric"
-          ref={(reference) => (inputRef.current[index] = reference)}
-          onChange={(e) => handleChange(e, index)}
-          onKeyDown={(e) => handleBackspace(e, index)}
-        />
-      </div>
-    ));
+    mutate(data);
   };
 
   return (
-    <div>
+    <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
       <form
-        className="flex flex-col space-y-16"
+        className="space-y-4"
         onSubmit={handleSubmit(onSubmit)}
         method="POST"
       >
-          <div className="flex flex-row items-center justify-between mx-auto w-full max-w-xs">
-            {element()}
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Otp<span className="text-red-500">*</span>
+          </label>
+          <div className="mt-1">
+            <input
+              id="otp"
+              placeholder="1234"
+              maxLength={4}
+              {...register("otp")}
+              className={`block w-full rounded-md border-0 py-2
+               ${isError ? "ring-red-500" : "ring-gray-300"}
+               text-gray-900 shadow-sm ring-1 ring-inset  placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-[#1964FF] sm:text-sm sm:leading-6 px-2`}
+            />
           </div>
+          {errors.otp && (
+            <p className="my-2 text-sm text-red-500">{errors.otp.message}</p>
+          )}  
+        </div>
 
-          <div className="flex flex-col space-y-5">
-            <div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex w-full justify-center rounded-md bg-[#1964FF] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-6"
-              >
-                Verify Account
-              </button>
-            </div>
+  
+        <div>
+          {isError && isObjectEmpty(errors) && (
+            <p className="text-sm text-red-500">
+              Invalid OTP. Please try again
+            </p>
+          )}
 
-            {/* <div className="flex flex-row items-center justify-center text-center text-sm font-medium space-x-1 text-gray-500">
-              <p>Didn't receive code?</p>{" "}
-              <button
-                type="button"
-                disabled={resendOtp}
-                onClick={handleResend}
-                className="flex flex-row items-center text-blue-600"
-              >
-                Resend
-              </button>
-            </div> */}
-          </div>
+          <button
+            type="submit"
+            disabled={isSubmitting || isPending}
+            className="flex w-full justify-center rounded-md bg-[#1964FF] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-6"
+          >
+            {isPending ? <AuthLoader /> : "Create Account"}
+          </button>
+   
+        </div>
       </form>
     </div>
   );

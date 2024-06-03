@@ -7,6 +7,7 @@ import SocketProvider from "./providers/SocketProvider";
 import AuthProvider from "./providers/AuthProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ChatProider from "./providers/ChatProvider";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient();
 
@@ -16,11 +17,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <ChatProider>
-            <SocketProvider>
+            <SocketProvider>        
               <App />
             </SocketProvider>
           </ChatProider>
         </AuthProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </Router>
   </React.StrictMode>

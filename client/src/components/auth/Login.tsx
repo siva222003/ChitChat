@@ -7,10 +7,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { FORGOT_PASSWORD_ROUTE, HOME_ROUTE } from "../../utils/constants";
 import { AxiosError } from "axios";
 import AuthLoader from "../ui/loaders/AuthLoader";
+import { isObjectEmpty } from "../../utils/helper";
 
 const Login = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -20,11 +22,11 @@ const Login = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const { mutate, isPending, isError } = useMutation({
+  const { mutate, isPending, isError ,error} = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
       localStorage.setItem("accessToken", data.data.accessToken || "");
-      queryClient.invalidateQueries(["user"]);
+      queryClient.invalidateQueries({ queryKey: ["user"] });
       navigate(HOME_ROUTE);
     },
     onError: (err: AxiosError) => {
@@ -39,6 +41,7 @@ const Login = () => {
     console.log(data);
     mutate(data);
   };
+
 
   return (
     <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -106,15 +109,18 @@ const Login = () => {
         </div>
 
         <div>
-          {isError && (
+          {isError && isObjectEmpty(errors) && (
             <p className="text-sm text-red-500">
-              Email or password is incorrect.Please try again
+              {
+                 (error.response?.data as Error).message ||
+                  "Something went wrong"
+              }
             </p>
           )}
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isPending}
             className="flex w-full justify-center rounded-md bg-[#1964FF] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-6"
           >
             {isPending ? <AuthLoader /> : "Log in"}

@@ -5,18 +5,19 @@ import {
   LoginType,
   RegisterType,
   ResetPasswordType,
+  VerifyOtpType,
 } from "../types/auth.types";
 import { useNavigate } from "react-router-dom";
-import { api } from "../utils/axios.interceptors";
+import { api } from "../api/axios";
 import { UserType } from "../types/user.types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+
 type AuthProviderProps = {
   children: ReactNode;
 };
 
 export const getUser = async () => {
-  console.log("Fetching User");
   const response = await api.get("/user/me");
   return response.data;
 };
@@ -37,6 +38,14 @@ export const signup: RegisterType = async (data) => {
 };
 
 //VerifyOtp
+export const verifyOtp : VerifyOtpType  = async (data) => {
+  const response = await api.post("/auth/verify-otp", {
+    email : localStorage.getItem('email') || "",
+    otp : data.otp
+  });
+  localStorage.removeItem('email')
+  return response.data;
+};
 
 //ForgotPassword
 export const forgotPassword: ForgotPasswordType = async (data) => {
@@ -55,27 +64,31 @@ export const resetPassword: ResetPasswordType = async ({
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setAuthenticated] = useState(false);
-  const [user, setUser] = useState<UserType>(null);
-  // const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<UserType | null>(null);
+
   const token = localStorage.getItem("accessToken");
 
-  const { isLoading, data, isError} = useQuery({
-    queryKey: ["movies"],
+  const { isLoading, data, isError ,isSuccess} = useQuery({
+    queryKey: ["user"],
     queryFn: getUser,
-    enabled: !!token,
+    refetchOnMount: false,
+    retry : false
   });
 
-  // console.log("isAuthenticated", isAuthenticated);
-  console.log(token)
+  // console.log(user)
+  // console.log('AuthProvder',isAuthenticated)
 
   useEffect(() => {
-    if (!isError && data) {
-      setUser(data);
+
+    if (!token) {
+      setAuthenticated(false);
+    } else if (isSuccess && data) {
+      setUser(data.data);
       setAuthenticated(true);
     } else if (isError) {
       setAuthenticated(false);
     }
-  }, [data, isError]);
+  }, [data, isError,isSuccess]);
 
   return (
     <AuthContext.Provider

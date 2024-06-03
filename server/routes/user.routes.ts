@@ -4,7 +4,7 @@ import { verify } from "../middleware/protect.middleware";
 
 const router = express.Router();
 
-router.get("/all", verify, getAllUsers);
+router.get("/all", getAllUsers);
 router.get("/me", verify, getUser);
 router.post("/add-friend", verify,addFriend )
 
