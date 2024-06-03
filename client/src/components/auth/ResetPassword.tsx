@@ -24,10 +24,9 @@ const ResetPassword = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: resetPassword,
-    onSuccess: (data) => {
+    onSuccess: () => {
       console.log("Password Reset Successful");
-      localStorage.setItem("accessToken", data.data.accessToken || "");
-      navigate(HOME_ROUTE, { replace: true });
+      navigate(LOGIN_ROUTE, { replace: true });
     },
     onError: (err: AxiosError) => {
       console.error(
@@ -38,7 +37,6 @@ const ResetPassword = () => {
   });
 
   const onSubmit: SubmitHandler<ResetPasswordFormTypes> = (data) => {
-    console.log(data);
     mutate({ data, resetToken });
   };
 

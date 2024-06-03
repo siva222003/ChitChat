@@ -29,7 +29,7 @@ const ForgotPassword = () => {
   });
   const { mutate, isPending, isError } = useMutation({
     mutationFn: forgotPassword,
-    onSuccess: (data) => {
+    onSuccess: () => {
       console.log("Successfully sent reset link to email");
       navigate(RESET_PASSWORD_EMAIL_SENT_ROUTE, { replace: true });
     },
@@ -42,7 +42,6 @@ const ForgotPassword = () => {
   });
 
   const onSubmit: SubmitHandler<ForgotPasswordFormTypes> = (data) => {
-    console.log(data);
     mutate(data);
   };
 

@@ -7,11 +7,9 @@ import {
   ResetPasswordType,
   VerifyOtpType,
 } from "../types/auth.types";
-import { useNavigate } from "react-router-dom";
 import { api } from "../api/axios";
 import { UserType } from "../types/user.types";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 type AuthProviderProps = {
   children: ReactNode;
@@ -37,23 +35,20 @@ export const signup: RegisterType = async (data) => {
   return response.data;
 };
 
-//VerifyOtp
-export const verifyOtp : VerifyOtpType  = async (data) => {
+export const verifyOtp: VerifyOtpType = async (data) => {
   const response = await api.post("/auth/verify-otp", {
-    email : localStorage.getItem('email') || "",
-    otp : data.otp
+    email: localStorage.getItem("email") || "",
+    otp: data.otp,
   });
-  localStorage.removeItem('email')
+  localStorage.removeItem("email");
   return response.data;
 };
 
-//ForgotPassword
 export const forgotPassword: ForgotPasswordType = async (data) => {
   const response = await api.post("/auth/forgot-password", data);
   return response.data;
 };
 
-//ResetPassword
 export const resetPassword: ResetPasswordType = async ({
   data,
   resetToken,
@@ -68,18 +63,17 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const token = localStorage.getItem("accessToken");
 
-  const { isLoading, data, isError ,isSuccess} = useQuery({
+  const { isLoading, data, isError, isSuccess } = useQuery({
     queryKey: ["user"],
     queryFn: getUser,
     refetchOnMount: false,
-    retry : false
+    retry: false,
   });
 
   // console.log(user)
   // console.log('AuthProvder',isAuthenticated)
 
   useEffect(() => {
-
     if (!token) {
       setAuthenticated(false);
     } else if (isSuccess && data) {
@@ -88,7 +82,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     } else if (isError) {
       setAuthenticated(false);
     }
-  }, [data, isError,isSuccess]);
+  }, [data, isError, isSuccess]);
 
   return (
     <AuthContext.Provider
