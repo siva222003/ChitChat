@@ -1,5 +1,5 @@
 import React from "react";
-import no_chat from "../../assets/images/no_chat.svg";
+import no_chat from "../../../assets/images/no_chat.svg";
 const NoChats = () => {
   return (
     <div className="max-h-screen flex flex-1 flex-col justify-center items-center">

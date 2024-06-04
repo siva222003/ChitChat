@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { Dashboard, DashboardEnum } from "../types/chat.types";
 import SideNavSM from "../layout/SideNavSM";
 import SideNavLG from "../layout/SideNavLG";

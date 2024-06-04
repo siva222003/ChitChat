@@ -2,7 +2,6 @@ import { Server, Socket } from "socket.io";
 import { IUser } from "../interfaces/userI";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { User } from "../models";
-import { on } from "events";
 
 interface CustomSocket extends Socket {
   user?: IUser;

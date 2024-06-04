@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Schema, Types } from "mongoose";
 
 export interface IUser {
     firstName: string;
@@ -16,7 +16,7 @@ export interface IUser {
     updatedAt: Date;
     otp: string | undefined;
     otp_expiry_time: Date;
-    friends : {id: Schema.Types.ObjectId , firstName : string}[]
+    friends : {id:Types.ObjectId , firstName : string}[]
     socketId : string
     correctPassword(password : string,enteredPassword : string) : Promise<boolean>
     correctOtp(otp : string | undefined,enteredOtp : string) : Promise<boolean>

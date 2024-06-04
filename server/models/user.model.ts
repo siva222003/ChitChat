@@ -1,10 +1,10 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 import { IUser } from "../interfaces/userI";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 
 const friendsSchema = new Schema({
-    id : {type : Schema.Types.ObjectId,ref : "User"},
+    id : {type : Types.ObjectId,ref : "User"},
     firstName : String,
     avatar : String
 })

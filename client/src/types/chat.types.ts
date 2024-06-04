@@ -1,18 +1,18 @@
 export type Message = string;
 export type Dashboard = DashboardEnum
 
-export type Conversations = {
+export type Conversation = {
   name: string;
   content: string;
   src: string;
 };
-export type Groups = {
+export type Group = {
     name: string;
     content: string;
     src: string;
   };
 
-export type Contacts = {
+export type Contact = {
     name: string;
     content: string;
     src: string;

@@ -1,6 +1,6 @@
 import React from "react";
 import { groups } from "../../utils/constants";
-import { Groups } from "../../types/chat.types";
+import { Group } from "../../types/chat.types";
 
 const Groups = () => {
   return (
@@ -8,7 +8,7 @@ const Groups = () => {
       <div className="py-3">
         <p className="text-[13px] font-semibold text-[#676667]">Pinned</p>
 
-        {groups.map((e:Groups, index:number) => {
+        {groups.map((e:Group, index:number) => {
           return (
             <div
               // onContextMenu={(e) => onMenuClick(e)}
@@ -47,7 +47,7 @@ const Groups = () => {
       <div className="py-4">
         <p className="text-[13px] font-semibold text-[#676667]">All Chats</p>
 
-        {groups.map((e:Groups, index:number) => {
+        {groups.map((e:Group, index:number) => {
           return (
             <div
               key={index}

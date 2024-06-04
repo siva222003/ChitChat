@@ -1,18 +1,11 @@
+import { Schema } from "mongoose";
 
 export interface IMessage {
-
-    senderId: string;
-    receiverId: string;
+    sender: Schema.Types.ObjectId;
     message: string;
-    read: boolean;
-    deleted: boolean;
-    deletedAt: Date;
-    delivered: boolean;
-    deliveredAt: Date;
-    deliveredTo: string;
-    deliveredFrom: string;
-    deliveredToAt: Date;
-    deliveredFromAt: Date;
-    deliveredToFrom: string;
-    deliveredFromTo: string
-}
+    chat: Schema.Types.ObjectId;
+    createdAt: Date;
+    updatedAt: Date;
+    status: string;
+  }
+  

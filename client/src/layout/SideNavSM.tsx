@@ -9,7 +9,7 @@ type SideNavSMProps = {
 };
 
 const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
-  const {user} = useAuth()
+  const { user } = useAuth();
   return (
     <nav className="flex px-3 border-2 h-screen flex-col items-center justify-between bg-[#F0F4FA]">
       <div className="flex  flex-col items-center">
@@ -31,7 +31,9 @@ const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
           <div
             onClick={() => setCurrentTab(DashboardEnum.Groups)}
             className={`h-12 w-12 cursor-pointer rounded-xl  flex justify-center items-center ${
-              currentTab === DashboardEnum.Groups ? "bg-[#5B96F7] text-white" : ""
+              currentTab === DashboardEnum.Groups
+                ? "bg-[#5B96F7] text-white"
+                : ""
             }`}
           >
             <Users size={23} />
@@ -57,10 +59,10 @@ const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
           <Users size={23} />
         </div>
         <div className="h-14 w-14 rounded-full  cursor-pointer">
-          <h1>{user?.data?.firstName}</h1>
+          <h1>{user?.firstName}</h1>
           <img
             className="inline-block h-14 w-14 rounded-full"
-            src={user?.data?.avatar}
+            src={user?.avatar}
             alt=""
           />
         </div>

@@ -1,13 +1,13 @@
 import React, { useMemo } from "react";
 import { sortContacts } from "../../utils/helper";
-import { Contacts } from "../../types/chat.types";
+import { Contact } from "../../types/chat.types";
 
 const Contacts = () => {
   const contacts = useMemo(() => sortContacts(), []);
 
   let currentAlphabet = "";
 
-  const contactElement = (contact: Contacts, index: number) => {
+  const contactElement = (contact: Contact, index: number) => {
     return (
       <div
         // onContextMenu={(e) => onMenuClick(e)}
@@ -30,7 +30,7 @@ const Contacts = () => {
     );
   };
 
-  const contactElements = contacts.map((contact: Contacts, index) => {
+  const contactElements = contacts.map((contact: Contact, index) => {
     const firstAlphabet = contact?.name[0].toUpperCase() || "";
     if (firstAlphabet !== currentAlphabet) {
       currentAlphabet = firstAlphabet;
