@@ -11,7 +11,10 @@ import { Chat } from "../models/chat.model";
 
 export const getAllUsers = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
-    const users = await User.find({});
+
+    const users = await User.find().select(
+      "firstName about avatar"
+    );
 
     res
       .status(200)

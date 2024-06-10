@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ChatHeader from "../../components/chat/ChatHeader";
 import Messages from "../../components/chat/Messages";
-import SendMessage from "../../components/ui/chat/ChatInput";
+import SendMessage from "../../components/chat/ChatInput";
 import useChat from "../../hooks/useChat";
 import NoChats from "../../components/ui/chat/NoChats";
 import { useSocket } from "../../hooks/useSocket";

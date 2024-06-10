@@ -13,9 +13,10 @@ export type Group = {
   };
 
 export type Contact = {
-    name: string;
-    content: string;
-    src: string;
+    _id: string;
+    firstName: string;
+    about: string;
+    avatar: "";
   } | undefined;
 
   

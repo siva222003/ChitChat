@@ -1,52 +1,35 @@
 import React, { useMemo } from "react";
 import { sortContacts } from "../../utils/helper";
 import { Contact } from "../../types/chat.types";
+import ContactList from "../ui/dashboard/ContactList";
+import DashboardLoader from "../ui/loaders/DashboardLoader";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../../api/axios";
 
 const Contacts = () => {
-  const contacts = useMemo(() => sortContacts(), []);
-
-  let currentAlphabet = "";
-
-  const contactElement = (contact: Contact, index: number) => {
-    return (
-      <div
-        // onContextMenu={(e) => onMenuClick(e)}
-        key={index}
-        className="w-full flex my-3 bg-white rounded-lg py-3 px-3 gap-3"
-      >
-        <img
-          className="inline-block h-10 w-10 rounded-full ring-2 ring-white"
-          src={contact?.src}
-          alt=""
-        />
-
-        <div className="flex flex-col justify-center">
-          <h4 className="text-[13px] font-semibold text-[#030303]">
-            {contact?.name}
-          </h4>
-          <p className="text-xs text-[#7C7C7D]">{contact?.content}</p>
-        </div>
-      </div>
-    );
-  };
-
-  const contactElements = contacts.map((contact: Contact, index) => {
-    const firstAlphabet = contact?.name[0].toUpperCase() || "";
-    if (firstAlphabet !== currentAlphabet) {
-      currentAlphabet = firstAlphabet;
-      return (
-        <React.Fragment key={firstAlphabet}>
-          <h2 className="text-[#709CE6] ml-2">{firstAlphabet}</h2>
-          {contactElement(contact, index)}
-        </React.Fragment>
-      );
-    }
-    return contactElement(contact, index);
+  const { data, isLoading, isSuccess, isError } = useQuery<Contact[]>({
+    queryKey: ["contacts"],
+    queryFn: async () => {
+      const response = await api.get("/user/all");
+      return response.data.data;
+    },
+    retry: 1,
+    refetchOnMount: false,
   });
 
-  return <div>
-    {contactElements}
-  </div>;
+  const contacts = useMemo(() => sortContacts(data), [data]);
+
+  if (isLoading) return <DashboardLoader />;
+
+  if (isError) return <div>Error</div>;
+
+  if (isSuccess)
+    return (
+      <div>
+  
+        <ContactList contacts={contacts} />
+      </div>
+    );
 };
 
 export default Contacts;

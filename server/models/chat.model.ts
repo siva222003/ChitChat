@@ -1,4 +1,4 @@
-import mongoose, { model } from "mongoose";
+import mongoose, { Schema, Types, model } from "mongoose";
 import { IChat } from "../interfaces/chatI";
 
 //create a chat schema
@@ -14,17 +14,17 @@ const chatSchema = new mongoose.Schema(
     },
     participants: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Types.ObjectId,
         ref: "User",
       },
     ],
     lastMessage: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Types.ObjectId,
       ref: "Message",
     },
     messages: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Types.ObjectId,
         ref: "Message",
       },
     ],

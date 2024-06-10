@@ -24,7 +24,6 @@ export const verify = asyncHandler(
     jwt.verify(token, JWT_SECRET, async (err, decoded) => {
       if (err) {
         console.log(err);
-        // Token is invalid or expired
         if (err.name === "TokenExpiredError") {
           throw new ApiError(401, "Token expired. Please log in again.");
         }

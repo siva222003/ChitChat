@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import useChat from "../../hooks/useChat";
 import MessageList from "./MessageList";
-import TextMessage from "../messages/TextMessage";
+import TextMessage from "../ui/messages/TextMessage";
 
 const Messages = () => {
   const { messages } = useChat();

@@ -1,9 +1,9 @@
-import { Schema } from "mongoose";
+import { Schema, Types } from "mongoose";
 
 export interface IMessage {
-    sender: Schema.Types.ObjectId;
+    sender: Types.ObjectId;
     message: string;
-    chat: Schema.Types.ObjectId;
+    chat: Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
     status: string;

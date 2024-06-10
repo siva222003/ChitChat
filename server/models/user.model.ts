@@ -21,6 +21,7 @@ const userSchema = new Schema(
     },
     about: {
       type: String,
+      default: ["Hey there! I am using ChitChat."],
     },
     avatar: {
       type: String,
