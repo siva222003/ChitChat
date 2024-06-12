@@ -7,6 +7,7 @@ const Messages = () => {
   const { messages } = useChat();
   const messageRef = useRef<HTMLDivElement | null>(null);
 
+  
   useEffect(() => {
     if (messageRef.current !== null) {
       messageRef.current.scrollIntoView({ behavior: "smooth" });

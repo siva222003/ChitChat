@@ -4,10 +4,10 @@ import crypto from "crypto";
 import bcrypt from "bcryptjs";
 
 const friendsSchema = new Schema({
-    id : {type : Types.ObjectId,ref : "User"},
-    firstName : String,
-    avatar : String
-})
+  id: { type: Types.ObjectId, ref: "User" },
+  firstName: String,
+  avatar: String,
+});
 
 const userSchema = new Schema(
   {
@@ -21,7 +21,7 @@ const userSchema = new Schema(
     },
     about: {
       type: String,
-      default: ["Hey there! I am using ChitChat."],
+      default: "Hey there! I am using ChitChat.",
     },
     avatar: {
       type: String,
@@ -37,8 +37,8 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    refreshToken : {
-      type : String
+    refreshToken: {
+      type: String,
     },
     passwordResetToken: {
       type: String,
@@ -56,10 +56,15 @@ const userSchema = new Schema(
       type: Date,
     },
 
-    friends : [friendsSchema],
-    socketId : String
-
-
+    friends: [friendsSchema],
+    notifications: [
+      {
+        sender: {
+          type: Types.ObjectId,
+          ref: "User",
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

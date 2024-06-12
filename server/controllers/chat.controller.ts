@@ -14,10 +14,11 @@ import { Message } from "../models/message.model";
 export const getAllChats = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     const userId = req.userId;
+
     const chats = await Chat.find(
       { members: userId },
       { isGroupChat: false }
-    ).populate("members", "firstName");
+    ).populate("members", "firstName avatar").select("-messages -__v -isGroupChat");
 
     if (!chats) {
       throw new ApiError(STATUS_BAD_REQUEST, "No chats found");
@@ -46,6 +47,11 @@ export const getChat = asyncHandler(
 );
 
 /*---------------- Delete Chat  ------------------*/
+
+
+
+
+
 
 /*---------------------- @MESSAGES ---------------------*/
 

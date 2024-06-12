@@ -9,16 +9,28 @@ import { Chat } from "../models/chat.model";
 
 /*---------------- Get All Users  ------------------*/
 
-export const getAllUsers = asyncHandler(
+export const getAllUsersExceptFriends = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
+    const id = req.userId;
+    const user = await User.findById(id);
 
-    const users = await User.find().select(
-      "firstName about avatar"
-    );
+    if (!user) {
+      throw new ApiError(STATUS_NOT_FOUND, "User not found");
+    }
+
+    const users = await User.find({
+      _id: { $nin: [...user.friends.map((friend) => friend.id), id] },
+    }).select("firstName about avatar");
 
     res
       .status(200)
-      .json(new ApiResponse(200, users, "Successfully retrieved all users"));
+      .json(
+        new ApiResponse(
+          200,
+          users,
+          "Successfully retrieved all users except friends"
+        )
+      );
   }
 );
 
@@ -28,7 +40,7 @@ export const getUser = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
     const id = req.userId;
     const user = await User.findById(id).select(
-      "-password -refreshToken -otp -otp_expiry_time"
+      "-password -refreshToken -otp -otp_expiry_time -passwordChangedAt -passwordResetToken -passwordResetExpires -verified -__v"
     );
 
     if (!user) {
@@ -63,12 +75,19 @@ export const sendFriendRequest = asyncHandler(
       throw new ApiError(STATUS_CONFLICT, "Friend request already sent");
     }
 
-    user.friends.push({
-      id: friendId,
-      firstName: friend.firstName,
+    const friendRequest = new FriendRequest({
+      sender: id,
+      receiver: friendId,
     });
-    await user.save();
-    res.json(new ApiResponse(200, {}, "Friend added successfully"));
+
+    await friendRequest.save();
+
+    friend.notifications.push({
+      sender: user._id,
+    });
+
+    await friend.save();
+    res.json(new ApiResponse(200, {}, "Friend Requset Sent successfully"));
   }
 );
 
@@ -80,7 +99,7 @@ export const acceptFriendRequest = asyncHandler(
     const { friendId, accept } = req.body;
 
     if (!id || !friendId) {
-      throw new ApiError(STATUS_NOT_FOUND, "User or Friend not found");
+      throw new ApiError(STATUS_NOT_FOUND, "User ID or Friend ID not found");
     }
 
     const user = await User.findById(id);
@@ -101,6 +120,10 @@ export const acceptFriendRequest = asyncHandler(
 
     if (!accept) {
       await friendRequest.deleteOne();
+      user.notifications = user.notifications.filter(
+        (notification) => notification.sender.toString() !== friendId
+      );
+      await user.save();
       res.json(new ApiResponse(STATUS_OK, {}, "Friend request rejected"));
       return;
     }
@@ -108,11 +131,17 @@ export const acceptFriendRequest = asyncHandler(
     user.friends.push({
       id: friendId,
       firstName: friend.firstName,
+      avatar: friend.avatar,
     });
+
+    user.notifications = user.notifications.filter(
+      (notification) => notification.sender.toString() !== friendId
+    );
 
     friend.friends.push({
       id: id,
       firstName: user.firstName,
+      avatar: user.avatar,
     });
 
     await Promise.all([user.save(), friend.save(), friendRequest.deleteOne()]);
@@ -125,7 +154,7 @@ export const acceptFriendRequest = asyncHandler(
   }
 );
 
-/*---------------- Remove Friend Friends  ------------------*/
+/*---------------- Remove Friend ------------------*/
 
 export const removeFriend = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
@@ -153,3 +182,46 @@ export const removeFriend = asyncHandler(
 );
 
 
+
+/*---------------- Get All Notifications  ------------------*/
+
+export const getNotifications = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const id = req.userId;
+    const user = await User.findById(id).populate({
+      path: "notifications.sender",
+      select: "firstName avatar",
+    });
+
+    if (!user) {
+      throw new ApiError(STATUS_NOT_FOUND, "User not found");
+    }
+
+    res.json(
+      new ApiResponse(
+        STATUS_OK,
+        user.notifications,
+        "Notifications retrieved successfully"
+      )
+    );
+  }
+);
+
+/*---------------- Get All Users  ------------------*/
+
+export const getAllUsers = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const users = await User.find({}).select(
+      "firstName about friends notifications email"
+    );
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          users,
+          "Successfully retrieved all users except friends"
+        )
+      );
+  }
+);

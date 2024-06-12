@@ -1,7 +1,11 @@
-import { ChatCircleDots, Users, Phone, Gear } from "phosphor-react";
+import { ChatCircleDots, Users, Phone, Gear, Bell } from "phosphor-react";
 import logo from "../assets/images/logo.svg";
 import { Dashboard, DashboardEnum } from "../types/chat.types";
 import useAuth from "../hooks/useAuth";
+import NotificationsModal from "../components/dashboard/NotificationsModal";
+import { useState } from "react";
+import useNotificationsModal from "../hooks/useNotificationsModal";
+import UserProfileOverlay from "../components/dashboard/UserProfileOverlay";
 
 type SideNavSMProps = {
   currentTab: Dashboard;
@@ -10,6 +14,12 @@ type SideNavSMProps = {
 
 const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
   const { user } = useAuth();
+
+  const { isModalOpen, showModal, handleOk, handleCancel } =
+    useNotificationsModal();
+
+  const [openProfile, setOpenProfile] = useState(false);
+
   return (
     <nav className="flex px-3 border-2 h-screen flex-col items-center justify-between bg-[#F0F4FA]">
       <div className="flex  flex-col items-center">
@@ -54,18 +64,41 @@ const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
         </div>
       </div>
 
-      <div className="flex  flex-col items-center gap-6 my-10">
-        <div className="h-10 w-10 cursor-pointer  flex justify-center items-center ">
-          <Users size={23} />
+      <div className="flex  flex-col items-center gap-4 my-10">
+        <div
+          onClick={showModal}
+          className="h-10 w-10 cursor-pointer  flex justify-center items-center relative"
+        >
+          {user?.notifications?.length !== 0 && (
+            <span className="text-xs w-4 h-4 text-center text-white rounded-full bg-red-500 absolute top-0 right-0">
+              {user?.notifications?.length}
+            </span>
+          )}
+          <Bell size={23} />
+          {isModalOpen && (
+            <NotificationsModal
+              isModalOpen={isModalOpen}
+              handleOk={handleOk}
+              handleCancel={handleCancel}
+            />
+          )}
         </div>
-        <div className="h-14 w-14 rounded-full  cursor-pointer">
-          <h1>{user?.firstName}</h1>
+        <div
+          onClick={() => setOpenProfile(true)}
+          className="h-14 w-14 rounded-full cursor-pointer  flex justify-center items-center "
+        >
           <img
             className="inline-block h-14 w-14 rounded-full"
             src={user?.avatar}
             alt=""
           />
         </div>
+        {openProfile && (
+          <UserProfileOverlay
+            openProfile={openProfile}
+            setOpenProfile={setOpenProfile}
+          />
+        )}
       </div>
     </nav>
   );

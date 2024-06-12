@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import { LoginType } from "../types/auth.types";
 import { loginValue } from "../utils/constants";
-import { FriendsType, UserType } from "../types/user.types";
+import { UserType } from "../types/user.types";
 
 type AuthContextType = {
     isAuthenticated : boolean

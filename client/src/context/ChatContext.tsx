@@ -1,17 +1,16 @@
 import { createContext } from "react";
-import { Message } from "../types/chat.types";
+import { MemberType, MessageType } from "../types/chat.types";
 import { FriendsType } from "../types/user.types";
 
 type ChatContextType = {
-  messages: Message[];
+  messages: MessageType[];
   message: string;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSendMessage: () => void;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   currentChat: FriendsType | null;
-  setCurrentChat: React.Dispatch<React.SetStateAction<FriendsType | null>>;
- 
+  setCurrentChat: React.Dispatch<React.SetStateAction<MemberType | undefined>>;
 };
 
 const ChatContextValue = {
@@ -23,7 +22,6 @@ const ChatContextValue = {
   setMessage: () => {},
   currentChat: null,
   setCurrentChat: () => {},
- 
 };
 
 const ChatContext = createContext<ChatContextType>(ChatContextValue);

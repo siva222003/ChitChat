@@ -1,13 +1,13 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { sortContacts } from "../../utils/helper";
-import { Contact } from "../../types/chat.types";
+import { ContactType } from "../../types/user.types";
 import ContactList from "../ui/dashboard/ContactList";
 import DashboardLoader from "../ui/loaders/DashboardLoader";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../api/axios";
 
 const Contacts = () => {
-  const { data, isLoading, isSuccess, isError } = useQuery<Contact[]>({
+  const { data, isLoading, isSuccess, isError } = useQuery<ContactType[]>({
     queryKey: ["contacts"],
     queryFn: async () => {
       const response = await api.get("/user/all");
@@ -26,7 +26,6 @@ const Contacts = () => {
   if (isSuccess)
     return (
       <div>
-  
         <ContactList contacts={contacts} />
       </div>
     );

@@ -1,27 +1,27 @@
 import React from "react";
-import { Contact } from "../../../types/chat.types";
-import UserCard from "./UserCard";
+import { ContactType } from "../../../types/user.types";
+import ContactCard from "./ContactCard";
 
 interface ContactListProps {
-  contacts: Contact[];
+  contacts: ContactType[];
 }
 
 const ContactList = ({ contacts }: ContactListProps) => {
   let currentAlphabet = "";
   return (
     <>
-      {contacts.map((contact: Contact, index) => {
+      {contacts.map((contact: ContactType, index) => {
         const firstAlphabet = contact?.firstName[0].toUpperCase() || "";
         if (firstAlphabet !== currentAlphabet) {
           currentAlphabet = firstAlphabet;
           return (
             <React.Fragment key={index}>
               <h2 className="text-[#709CE6] ml-2">{firstAlphabet}</h2>
-              <UserCard user={contact} />
+              <ContactCard contact={contact} />
             </React.Fragment>
           );
         }
-        return <UserCard key={firstAlphabet} user={contact} />;
+        return <ContactCard key={firstAlphabet} contact={contact} />;
       })}
     </>
   );

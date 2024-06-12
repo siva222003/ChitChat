@@ -1,28 +1,28 @@
-export type Message = string;
-export type Dashboard = DashboardEnum
+import { ContactType } from "./user.types";
 
-export type Conversation = {
+export type MessageType = string;
+export type DashboardType = DashboardEnum;
+
+export type MemberType = Omit<ContactType, "about">;
+
+export type ConversationType = {
+  _id: string;
+  isArchived: boolean;
+  members: MemberType[];
+  createdAt: Date;
+  updatedAt: Date;
+  lastMessage: MessageType;
+};
+
+export type GroupType = {
   name: string;
   content: string;
   src: string;
 };
-export type Group = {
-    name: string;
-    content: string;
-    src: string;
-  };
 
-export type Contact = {
-    _id: string;
-    firstName: string;
-    about: string;
-    avatar: "";
-  } | undefined;
-
-  
-  export enum DashboardEnum {
-    Conversations = "Conversations",
-    Groups = "Groups",
-    Contacts = "Contacts",
-    Archived = "Archived",
-  } 
+export enum DashboardEnum {
+  Conversations = "Conversations",
+  Groups = "Groups",
+  Contacts = "Contacts",
+  Archived = "Archived",
+}

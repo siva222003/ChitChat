@@ -9,10 +9,14 @@ const chatSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isArchived: {
+      type: Boolean,
+      default: false,
+    },
     groupName: {
       type: String,
     },
-    participants: [
+    members: [
       {
         type: Types.ObjectId,
         ref: "User",
