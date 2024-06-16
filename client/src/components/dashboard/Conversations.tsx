@@ -9,6 +9,7 @@ type ConversationsProps = {
 };
 
 const Conversations = ({ archived = false }: ConversationsProps) => {
+
   const {
     data: conversations,
     isLoading,
@@ -21,7 +22,7 @@ const Conversations = ({ archived = false }: ConversationsProps) => {
       return data.data;
     },
     retry: 1,
-    refetchOnMount: false,
+    staleTime: Infinity,
   });
 
   if (isLoading) return <DashboardLoader />;

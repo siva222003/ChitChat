@@ -25,6 +25,7 @@ const SendMessage = () => {
     handleSendMessage,
     setMessage,
   } = useChat();
+  
   const [emojiPicker, setEmojiPicker] = useState<boolean>(false);
   const [attachments, setAttachments] = useState<boolean>(false);
 

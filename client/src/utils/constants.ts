@@ -185,9 +185,19 @@ export enum SocketEvents {
   CONNECT = "connect",
   DISCONNECT = "disconnect",
   ONLINE = "online",
-  MESSAGE = "message",
+
+
   TYPING = "typing",
   STOP_TYPING = "stop-typing",
+
+  
+  FRIEND_REQUEST = "friend request",
+  ACCEPT_REQUEST = "accept request",
+
+
+  CHAT_MESSAGE = "chat message",
+
+  
   JOIN = "join",
   LEAVE = "leave",
   ERROR = "error",

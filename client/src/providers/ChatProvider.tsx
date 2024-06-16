@@ -1,15 +1,32 @@
 import { ReactNode, useState } from "react";
 import ChatContext from "../context/ChatContext";
-import { Message } from "../types/chat.types";
-import { FriendsType } from "../types/user.types";
+import { CurrentChatType, MemberType, MessageType } from "../types/chat.types";
+import socket from "../utils/socket";
+import { SocketEvents } from "../utils/constants";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "../api/axios";
 type ChatProiderProps = {
   children: ReactNode;
 };
 
 const ChatProider = ({ children }: ChatProiderProps) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const client = useQueryClient();
+
   const [message, setMessage] = useState<string>("");
-  const [currentChat, setCurrentChat] = useState<FriendsType | null>(null);
+  const [currentChat, setCurrentChat] = useState<CurrentChatType | null>(null);
+
+  const { mutate } = useMutation<MessageType, Error, string>({
+    mutationFn: async (message: string) => {
+      if (!currentChat) return;
+      const response = await api.post(`/chat/${currentChat.chatId}`, {
+        message,
+      });
+      return response.data.data;
+    },
+    onSuccess: (data) => {
+      client.setQueryData(["chat"], (prev: MessageType[]) => [...prev, data]);
+    },
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
@@ -17,7 +34,8 @@ const ChatProider = ({ children }: ChatProiderProps) => {
 
   const handleSendMessage = () => {
     if (!message.trim()) return;
-    setMessages((prev) => [...prev, message]);
+    // socket.emit(SocketEvents.CHAT_MESSAGE, {message ,id : currentChat?._id});
+    mutate(message);
     setMessage("");
   };
 
@@ -30,7 +48,6 @@ const ChatProider = ({ children }: ChatProiderProps) => {
   return (
     <ChatContext.Provider
       value={{
-        messages,
         message,
         setMessage,
         handleChange,

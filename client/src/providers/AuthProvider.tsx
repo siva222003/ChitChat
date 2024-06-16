@@ -17,7 +17,7 @@ type AuthProviderProps = {
 
 export const getUser = async () => {
   const response = await api.get("/user/me");
-  return response.data;
+  return response.data.data;
 };
 
 export const getAllUsers = async () => {
@@ -59,11 +59,15 @@ export const resetPassword: ResetPasswordType = async ({
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setAuthenticated] = useState(false);
-  const [user, setUser] = useState<UserType | null>(null);
 
   const token = localStorage.getItem("accessToken");
 
-  const { isLoading, data, isError, isSuccess } = useQuery({
+  const {
+    isLoading,
+    data: user,
+    isError,
+    isSuccess,
+  } = useQuery<UserType>({
     queryKey: ["user"],
     queryFn: getUser,
     refetchOnMount: false,
@@ -76,13 +80,12 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     if (!token) {
       setAuthenticated(false);
-    } else if (isSuccess && data) {
-      setUser(data.data);
+    } else if (isSuccess && user) {
       setAuthenticated(true);
     } else if (isError) {
       setAuthenticated(false);
     }
-  }, [data, isError, isSuccess]);
+  }, [user, isError, isSuccess]);
 
   return (
     <AuthContext.Provider

@@ -7,7 +7,9 @@ interface ContactCardProps {
 }
 
 const ContactCard = ({ contact }: ContactCardProps) => {
+
   const { mutate, isPending, isError, error } = useMutation({
+    
     mutationFn: async (data: { friendId: string }) => {
       const response = await api.post("/user/add-friend", data);
       return response.data;
@@ -37,7 +39,6 @@ const ContactCard = ({ contact }: ContactCardProps) => {
       title=""
       icon={null}
       description=""
-      // overlayClassName=""
       overlayInnerStyle={{
         paddingRight: "10px",
         paddingLeft: "0",

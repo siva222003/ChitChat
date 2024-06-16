@@ -20,6 +20,7 @@ export const DISCONNECT = "disconnect"
 export const SETUP = "setup"
 export const CHAT_MESSAGE = "chat message"
 export const FRIEND_REQUEST = "friend request"
+export const ACCEPT_REQUEST = "accept request"
 export const START_TYPING = "start typing"
 export const STOP_TYPING = "stop typing"
 

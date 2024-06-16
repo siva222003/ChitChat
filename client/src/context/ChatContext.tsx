@@ -1,20 +1,19 @@
 import { createContext } from "react";
-import { MemberType, MessageType } from "../types/chat.types";
-import { FriendsType } from "../types/user.types";
+import { CurrentChatType, MemberType, MessageType } from "../types/chat.types";
+import { set } from "zod";
 
 type ChatContextType = {
-  messages: MessageType[];
   message: string;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSendMessage: () => void;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
-  currentChat: FriendsType | null;
-  setCurrentChat: React.Dispatch<React.SetStateAction<MemberType | undefined>>;
+  currentChat: CurrentChatType | null;
+  setCurrentChat: React.Dispatch<React.SetStateAction<CurrentChatType | null>>;
+  
 };
 
 const ChatContextValue = {
-  messages: [],
   message: "",
   handleChange: () => {},
   handleSendMessage: () => {},

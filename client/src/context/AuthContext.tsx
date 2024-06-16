@@ -7,13 +7,13 @@ type AuthContextType = {
     isAuthenticated : boolean
     isLoading : boolean
     login: LoginType
-    user : UserType | null
+    user : UserType | undefined
 }
 
 const AuthContextValue = {
     isAuthenticated : false,
     isLoading : false,
-    user : null,
+    user : undefined,
     login: async () => loginValue,
 }
 

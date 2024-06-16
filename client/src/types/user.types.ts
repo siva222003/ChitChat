@@ -23,7 +23,7 @@ export type ContactType = {
   _id: string;
   firstName: string;
   about: string;
-  avatar: "";
+  avatar: string;
 };
 
 export type NotificationsType = {

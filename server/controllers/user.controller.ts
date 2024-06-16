@@ -2,10 +2,12 @@ import { User } from "../models";
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiResponse } from "../utils/ApiResponse";
-import { STATUS_CONFLICT, STATUS_NOT_FOUND, STATUS_OK } from "../src/constants";
+import { ACCEPT_REQUEST, FRIEND_REQUEST, STATUS_CONFLICT, STATUS_NOT_FOUND, STATUS_OK } from "../src/constants";
 import { ApiError } from "../utils/ApiError";
 import FriendRequest from "../models/request.model";
 import { Chat } from "../models/chat.model";
+import { io } from "../src/server";
+import { onlineUserIds } from "../src/socket";
 
 /*---------------- Get All Users  ------------------*/
 
@@ -88,6 +90,10 @@ export const sendFriendRequest = asyncHandler(
 
     await friend.save();
     res.json(new ApiResponse(200, {}, "Friend Requset Sent successfully"));
+
+    io.to(onlineUserIds.get(friendId) as string).emit(FRIEND_REQUEST, {
+      notifications: friend.notifications,
+    });
   }
 );
 
@@ -124,7 +130,13 @@ export const acceptFriendRequest = asyncHandler(
         (notification) => notification.sender.toString() !== friendId
       );
       await user.save();
-      res.json(new ApiResponse(STATUS_OK, {}, "Friend request rejected"));
+      res.json(
+        new ApiResponse(
+          STATUS_OK,
+          { notifications: user.notifications },
+          "Friend request rejected"
+        )
+      );
       return;
     }
 
@@ -150,7 +162,16 @@ export const acceptFriendRequest = asyncHandler(
       members: [id, friendId],
     });
 
-    res.json(new ApiResponse(STATUS_OK, {}, "Friend request accepted"));
+    res.json(new ApiResponse(STATUS_OK,  { notifications: user.notifications }, "Friend request accepted"));
+
+    const friendSocketId = onlineUserIds.get(friendId) as string;
+    const userSocketId = onlineUserIds.get(id.toString()) as string;
+    console.log(friendSocketId, userSocketId)
+    const socketIds = [friendSocketId, userSocketId];
+
+    io.to(socketIds).emit(ACCEPT_REQUEST, {
+      notifications: user.notifications,
+    });
   }
 );
 

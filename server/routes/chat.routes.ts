@@ -1,7 +1,7 @@
 import express from "express";
 
 import { verify } from "../middleware/protect.middleware";
-import { getAllChats, getChat } from "../controllers/chat.controller";
+import { getAllChats, getChat, sendMessage } from "../controllers/chat.controller";
 const router = express.Router();
 
 
@@ -9,6 +9,9 @@ const router = express.Router();
 router.get("/", verify, getAllChats);
 router.get("/:chatId", verify, getChat);
 
+
+/*------- Message Routes --------- */
+router.post("/:chatId", verify, sendMessage);
 
 
 

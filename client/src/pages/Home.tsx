@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Dashboard, DashboardEnum } from "../types/chat.types";
+import { DashboardType, DashboardEnum } from "../types/chat.types";
 import SideNavSM from "../layout/SideNavSM";
 import SideNavLG from "../layout/SideNavLG";
 import Chat from "./chat/Chat";
 
 const Home = () => {
-  const [currentTab, setCurrentTab] = useState<Dashboard>(
+  const [currentTab, setCurrentTab] = useState<DashboardType>(
     DashboardEnum.Conversations
   );
   return (

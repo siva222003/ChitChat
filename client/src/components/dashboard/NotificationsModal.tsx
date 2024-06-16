@@ -24,14 +24,14 @@ export default function NotificationsModal({
   handleOk,
   handleCancel,
 }: NotificationsModalProps) {
-  const { data, isLoading } = useQuery<NotificationsType[]>({
+  const { data, isLoading, isRefetching } = useQuery<NotificationsType[]>({
     queryKey: ["notifications"],
     queryFn: async () => {
       const response = await api.get("/user/notifications");
       return response.data.data;
     },
     retry: 1,
-    refetchOnMount: false,
+    staleTime: Infinity,
   });
 
   return (
@@ -81,7 +81,7 @@ export default function NotificationsModal({
 
                 {/* <!-- Body --> */}
 
-                {isLoading ? (
+                {isLoading || isRefetching ? (
                   <DashboardLoader />
                 ) : data && data.length ? (
                   <div className="px-6 my-3">

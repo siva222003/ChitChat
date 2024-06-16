@@ -15,12 +15,25 @@ const ConversationCard = ({ conversation }: ConversationCardProps) => {
   const { user } = useAuth();
 
   const friend = useMemo(() => {
-    return conversation.members.find((member) => member._id !== user?._id);
+    const ret = conversation.members.find((member) => member._id !== user?._id);
+    return ret ? ret : null;
   }, [conversation.members, user]);
+
+  const handleSetCurrentChat = () => {
+    if (friend && friend._id) {
+      const currentChatObj = {
+        _id: friend._id,
+        firstName: friend.firstName || "",
+        avatar: friend.avatar || "",
+        chatId: conversation._id,
+      };
+      setCurrentChat(currentChatObj);
+    }
+  };
 
   return (
     <div
-      onClick={() => setCurrentChat(friend)}
+      onClick={handleSetCurrentChat}
       className="w-full flex my-3 bg-white rounded-lg py-3 px-4 gap-3 cursor-pointer hover:bg-slate-100"
     >
       <div className="h-10 w-10 rounded-full relative">

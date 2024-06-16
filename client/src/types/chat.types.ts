@@ -1,9 +1,13 @@
 import { ContactType } from "./user.types";
 
-export type MessageType = string;
+// export type MessageType = string;
 export type DashboardType = DashboardEnum;
 
 export type MemberType = Omit<ContactType, "about">;
+
+export type CurrentChatType = MemberType & {
+  chatId: string;
+};
 
 export type ConversationType = {
   _id: string;
@@ -11,7 +15,7 @@ export type ConversationType = {
   members: MemberType[];
   createdAt: Date;
   updatedAt: Date;
-  lastMessage: MessageType;
+  lastMessage: string;
 };
 
 export type GroupType = {
@@ -26,3 +30,10 @@ export enum DashboardEnum {
   Contacts = "Contacts",
   Archived = "Archived",
 }
+
+export type MessageType = {
+  chat: string;
+  sender: string;
+  message: string;
+  status: string;
+};

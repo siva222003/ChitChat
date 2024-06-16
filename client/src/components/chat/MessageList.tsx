@@ -1,26 +1,30 @@
+import useAuth from "../../hooks/useAuth";
+import { MessageType } from "../../types/chat.types";
+import TextMessage from "../ui/messages/TextMessage";
+
 interface MessageListProps {
-  messages: string[];
+  messages: MessageType[];
   messageRef: React.RefObject<HTMLDivElement>;
 }
 
 const MessageList = ({ messages, messageRef }: MessageListProps) => {
+  const { user } = useAuth();
+
   return (
-    <>
+    <div ref={messageRef}>
       {messages.map((message, index) => {
-        if (typeof message === "string") {
+        if (message.message) {
           return (
-            <div
+            <TextMessage
               key={index}
-              ref={messageRef}
-              className="bg-messageRight px-3 py-4 my-2 text-white w-fit rounded-2xl ml-auto"
-            >
-              <p className="text-xs">{message}</p>
-            </div>
+              message={message.message}
+              isOwnMsg={message.sender === user?._id}
+            />
           );
         }
         return null;
       })}
-    </>
+    </div>
   );
 };
 

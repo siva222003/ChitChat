@@ -1,11 +1,12 @@
 import { CaretDown, MagnifyingGlass, Phone, VideoCamera } from "phosphor-react";
-import { MemberType } from "../../types/chat.types";
+import { CurrentChatType } from "../../types/chat.types";
 
 type ChatHeaderProps = {
-  currentChat: MemberType;
+  currentChat: CurrentChatType;
 };
 
 const ChatHeader = ({ currentChat }: ChatHeaderProps) => {
+
   return (
     <nav className="flex justify-between bg-[#F8FAFF] px-4">
       <div className="flex rounded-lg py-3  gap-3">

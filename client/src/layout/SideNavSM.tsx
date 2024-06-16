@@ -1,6 +1,6 @@
 import { ChatCircleDots, Users, Phone, Gear, Bell } from "phosphor-react";
 import logo from "../assets/images/logo.svg";
-import { Dashboard, DashboardEnum } from "../types/chat.types";
+import { DashboardType, DashboardEnum } from "../types/chat.types";
 import useAuth from "../hooks/useAuth";
 import NotificationsModal from "../components/dashboard/NotificationsModal";
 import { useState } from "react";
@@ -8,17 +8,21 @@ import useNotificationsModal from "../hooks/useNotificationsModal";
 import UserProfileOverlay from "../components/dashboard/UserProfileOverlay";
 
 type SideNavSMProps = {
-  currentTab: Dashboard;
-  setCurrentTab: React.Dispatch<React.SetStateAction<Dashboard>>;
+  currentTab: DashboardType;
+  setCurrentTab: React.Dispatch<React.SetStateAction<DashboardType>>;
 };
 
 const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
+
+
   const { user } = useAuth();
 
   const { isModalOpen, showModal, handleOk, handleCancel } =
     useNotificationsModal();
 
+    
   const [openProfile, setOpenProfile] = useState(false);
+
 
   return (
     <nav className="flex px-3 border-2 h-screen flex-col items-center justify-between bg-[#F0F4FA]">

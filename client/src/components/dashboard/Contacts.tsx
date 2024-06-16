@@ -10,12 +10,21 @@ const Contacts = () => {
   const { data, isLoading, isSuccess, isError } = useQuery<ContactType[]>({
     queryKey: ["contacts"],
     queryFn: async () => {
+      console.log("Fetching data");
       const response = await api.get("/user/all");
       return response.data.data;
     },
     retry: 1,
-    refetchOnMount: false,
+
+    //when set to false, the query will not refetch on mount (default: true)
+    // refetchOnMount: false,
+
+    //its denoting the time after which the data will be considered stale
+    // staleTime : Infinity -> data will never be considered stale
+    // so the data will be refetched only when the query is invalidated
+    staleTime: Infinity,
   });
+
 
   const contacts = useMemo(() => sortContacts(data), [data]);
 
