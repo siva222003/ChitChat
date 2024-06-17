@@ -1,4 +1,4 @@
-import { Check, Checks, Clock } from "phosphor-react";
+import { Check } from "phosphor-react";
 
 interface TextMessageProps {
   message: string;

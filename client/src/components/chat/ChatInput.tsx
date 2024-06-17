@@ -1,20 +1,20 @@
 import {
-  AddressBook,
+  // AddressBook,
   Link,
-  NavigationArrow,
+  // NavigationArrow,
   Smiley,
   TelegramLogo,
-  Image,
-  FileText,
+  // Image,
+  // FileText,
 } from "phosphor-react";
 import useChat from "../../hooks/useChat";
 import EmojiPicker from "emoji-picker-react";
 import { EmojiStyle } from "emoji-picker-react";
 import { useEffect, useRef, useState } from "react";
-import documentImage from "../../assets/images/document.png";
-import mediaImage from "../../assets/images/media.png";
-import locationImage from "../../assets/images/location.png";
-import contactImage from "../../assets/images/contact.png";
+// import documentImage from "../../assets/images/document.png";
+// import mediaImage from "../../assets/images/media.png";
+// import locationImage from "../../assets/images/location.png";
+// import contactImage from "../../assets/images/contact.png";
 import { fileInput } from "../../utils/constants";
 
 const SendMessage = () => {

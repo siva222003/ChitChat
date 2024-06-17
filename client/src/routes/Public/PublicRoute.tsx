@@ -1,6 +1,6 @@
-import { ReactNode, Suspense, useEffect } from "react";
+import { ReactNode, Suspense } from "react";
 import useAuth from "../../hooks/useAuth";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate} from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import { HOME_ROUTE } from "../../utils/constants";
 

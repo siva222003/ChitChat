@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Result } from 'antd';
+import { Result } from 'antd';
 
 const ResetPasswordEmailSent: React.FC = () => (
   <div className='h-screen w-screen flex justify-center items-center' > 

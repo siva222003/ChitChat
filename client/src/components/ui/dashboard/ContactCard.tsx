@@ -8,8 +8,8 @@ interface ContactCardProps {
 
 const ContactCard = ({ contact }: ContactCardProps) => {
 
-  const { mutate, isPending, isError, error } = useMutation({
-    
+  const { mutate } = useMutation({
+
     mutationFn: async (data: { friendId: string }) => {
       const response = await api.post("/user/add-friend", data);
       return response.data;

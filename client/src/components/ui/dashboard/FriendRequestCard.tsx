@@ -1,4 +1,3 @@
-import React from "react";
 import useNotificationsModal from "../../../hooks/useNotificationsModal";
 import { NotificationsType } from "../../../types/user.types";
 

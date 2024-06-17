@@ -1,12 +1,10 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
   ForgotPasswordFormTypes,
-  LoginFormTypes,
   forgotPasswordSchema,
-  loginSchema,
 } from "../../types/auth.types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   LOGIN_ROUTE,
   RESET_PASSWORD_EMAIL_SENT_ROUTE,

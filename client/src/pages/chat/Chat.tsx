@@ -11,9 +11,7 @@ import { SocketEvents } from "../../utils/constants";
 import { useQueryClient } from "@tanstack/react-query";
 import { MessageType } from "../../types/chat.types";
 
-type ChatProps = {};
-
-const Chat = React.memo((props: ChatProps) => {
+const Chat = React.memo(() => {
   const client = useQueryClient();
 
   const { currentChat } = useChat();

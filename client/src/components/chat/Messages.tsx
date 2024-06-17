@@ -7,7 +7,7 @@ import { api } from "../../api/axios";
 import { MessageType } from "../../types/chat.types";
 
 const Messages = () => {
-  // const { messages } = useChat();
+
   const messageRef = useRef<HTMLDivElement | null>(null);
 
   const { currentChat } = useChat();

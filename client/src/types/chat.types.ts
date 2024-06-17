@@ -1,6 +1,5 @@
 import { ContactType } from "./user.types";
 
-// export type MessageType = string;
 export type DashboardType = DashboardEnum;
 
 export type MemberType = Omit<ContactType, "about">;

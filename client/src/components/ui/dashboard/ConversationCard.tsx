@@ -3,7 +3,6 @@ import useAuth from "../../../hooks/useAuth";
 import useChat from "../../../hooks/useChat";
 import { useSocket } from "../../../hooks/useSocket";
 import { ConversationType } from "../../../types/chat.types";
-import { useMutation } from "@tanstack/react-query";
 
 interface ConversationCardProps {
   conversation: ConversationType;

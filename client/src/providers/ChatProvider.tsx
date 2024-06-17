@@ -1,8 +1,6 @@
 import { ReactNode, useState } from "react";
 import ChatContext from "../context/ChatContext";
-import { CurrentChatType, MemberType, MessageType } from "../types/chat.types";
-import socket from "../utils/socket";
-import { SocketEvents } from "../utils/constants";
+import { CurrentChatType, MessageType } from "../types/chat.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api/axios";
 type ChatProiderProps = {

@@ -1,11 +1,8 @@
 import ResetPasswordComponent from "../../components/auth/ResetPassword";
 import logoSvg from "../../assets/images/logo.svg";
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import NotFound from "../../components/ui/NotFound";
 const ResetPassword = () => {
-  const { token } = useParams();
-  const [isValidToken, setIsValidToken] = useState(true);
+  // const { token } = useParams();
+  // const [isValidToken, setIsValidToken] = useState(true);
 
   return (
     <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8">

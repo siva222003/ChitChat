@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import Search from "../ui/Search";
 import { ArchiveBox, CaretLeft, Plus } from "phosphor-react";
-import { Dashboard, DashboardEnum } from "../../types/chat.types";
+import { DashboardType, DashboardEnum } from "../../types/chat.types";
 import CreateGroupModal from "../groups/CreateGroupModal";
 
 type DashboardHeaderProps = {
-  currentTab: Dashboard;
-  setCurrentTab: React.Dispatch<React.SetStateAction<Dashboard>>;
+  currentTab: DashboardType;
+  setCurrentTab: React.Dispatch<React.SetStateAction<DashboardType>>;
 };
 
 const DashboardHeader = ({ currentTab, setCurrentTab }: DashboardHeaderProps) => {

@@ -1,4 +1,3 @@
-import React from "react";
 import no_chat from "../../../assets/images/no_chat.svg";
 const NoChats = () => {
   return (

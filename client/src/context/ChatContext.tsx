@@ -1,6 +1,5 @@
 import { createContext } from "react";
-import { CurrentChatType, MemberType, MessageType } from "../types/chat.types";
-import { set } from "zod";
+import { CurrentChatType } from "../types/chat.types";
 
 type ChatContextType = {
   message: string;

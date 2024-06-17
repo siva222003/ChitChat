@@ -1,8 +1,8 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ResetPasswordFormTypes, loginSchema, resetPasswordSchema } from "../../types/auth.types";
+import { ResetPasswordFormTypes, resetPasswordSchema } from "../../types/auth.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { HOME_ROUTE, LOGIN_ROUTE } from "../../utils/constants";
+import {  LOGIN_ROUTE } from "../../utils/constants";
 import AuthLoader from "../ui/loaders/AuthLoader";
 import { resetPassword } from "../../providers/AuthProvider";
 import { AxiosError } from "axios";
