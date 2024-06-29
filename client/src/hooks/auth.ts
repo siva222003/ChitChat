@@ -190,7 +190,7 @@ export const useSignUpMutation = () => {
 
   const { mutate, isPending, isError } = useMutation({
     mutationFn: signup,
-    onSuccess: (data) => {
+    onSuccess: () => {
       // if (data.success) {
       //   toast.success(data.message);
       //   navigate(VERIFY_OTP_ROUTE);

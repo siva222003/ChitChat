@@ -83,7 +83,7 @@ export const useMessageMutation = () => {
     },
     onError: (error, _, context) => {
       if (!context) return;
-
+      console.log(error.message);
       client.setQueryData(["chat"], (prev: MessageType[]) =>
         prev.filter((message) => message._id !== context.optimisticMessage._id)
       );

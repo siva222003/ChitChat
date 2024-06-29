@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { set } from "zod";
 
 const Test = () => {
   const [test, setTest] = useState([
@@ -25,7 +24,7 @@ const Test = () => {
   console.log(curr);
   const reset = () => {
     setTest((prev) => {
-      return prev.map((item, i) => {
+      return prev.map((item) => {
         return {
           ...item,
           rev: false,
