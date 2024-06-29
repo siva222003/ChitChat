@@ -51,6 +51,7 @@ const generateTokens = async (id: Types.ObjectId) => {
 
 // SignUp => register -> sendOtp -> verifyOtp
 
+/*------------------- SignUp -------------------*/
 export const registerUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { firstName, lastName, email, password } = req.body;
@@ -101,68 +102,64 @@ export const registerUser = asyncHandler(
   }
 );
 
-export const sendOtp = asyncHandler(
-  async (req: Request, res: Response): Promise<void> => {
-    const { userId } = req;
+/*------------------- Send Otp -------------------*/
+export const sendOtp = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { userId } = req;
 
-    const otp = otpGenerator.generate(4, {
-      upperCaseAlphabets: false,
-      lowerCaseAlphabets: false,
-      specialChars: false,
-    });
+  const otp = otpGenerator.generate(4, {
+    upperCaseAlphabets: false,
+    lowerCaseAlphabets: false,
+    specialChars: false,
+  });
 
-    const hashed_Otp = await genHash(otp);
+  const hashed_Otp = await genHash(otp);
 
-    const otp_expiry_time = Date.now() + 10 * 60 * 1000; //* 10 min
+  const otp_expiry_time = Date.now() + 10 * 60 * 1000; //* 10 min
 
-    const modifyObj = { otp: hashed_Otp, otp_expiry_time };
+  const modifyObj = { otp: hashed_Otp, otp_expiry_time };
 
-    const user = await User.findByIdAndUpdate({ _id: userId }, modifyObj, {
-      new: true,
-    });
+  const user = await User.findByIdAndUpdate({ _id: userId }, modifyObj, {
+    new: true,
+  });
 
-    if (!user) throw new ApiError(STATUS_NOT_FOUND, "User doesn't exist");
+  if (!user) throw new ApiError(STATUS_NOT_FOUND, "User doesn't exist");
 
-    //Sending Email to the User's Email with the generated otp
+  //Sending Email to the User's Email with the generated otp
 
-    sendMail({
-      to: user.email,
-      html: otpEmailTemplate(otp),
-    });
+  sendMail({
+    to: user.email,
+    html: otpEmailTemplate(otp),
+  });
 
-    res
-      .status(200)
-      .json(new ApiResponse(STATUS_OK, {}, "Otp sent successfully"));
-  }
-);
+  res.status(200).json(new ApiResponse(STATUS_OK, {}, "Otp sent successfully"));
+});
 
-export const verifyOtp = asyncHandler(
-  async (req: Request, res: Response): Promise<void> => {
-    const { email, otp } = req.body;
+/*------------------- Verify Otp -------------------*/
+export const verifyOtp = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { email, otp } = req.body;
 
-    console.log(email, otp)
+  console.log(email, otp);
 
-    const user = await User.findOne({
-      email,
-      otp_expiry_time: { $gt: Date.now() },
-    });
+  const user = await User.findOne({
+    email,
+    otp_expiry_time: { $gt: Date.now() },
+  });
 
-    if (!user)
-      throw new ApiError(STATUS_NOT_FOUND, "Email is invalid or OTP expired");
+  if (!user) throw new ApiError(STATUS_NOT_FOUND, "Email is invalid or OTP expired");
 
-    if (!(await user.correctOtp(user.otp, otp)))
-      throw new ApiError(STATUS_UNAUTHORIZED, "Otp is incorrect. Please try again");
+  if (!(await user.correctOtp(user.otp, otp)))
+    throw new ApiError(STATUS_UNAUTHORIZED, "Otp is incorrect. Please try again");
 
-    /*
+  /*
       Here we can even create an obj with both verified and otp fields and save
       their value to the database by using findByIDAndUpdate else we can easily 
       do the same process like this by changing the retrieved user  
   */
 
-    user.verified = true;
-    user.otp = undefined;
+  user.verified = true;
+  user.otp = undefined;
 
-    /*
+  /*
       Here generally we have to set an option to save property of mongoose
       validateBeforSave -> false
       this will make sure not to validate before saving as we are setting a 
@@ -171,126 +168,101 @@ export const verifyOtp = asyncHandler(
       there is no need in that
   */
 
-    await user.save();
+  await user.save();
 
-    const { accessToken, refreshToken } = await generateTokens(user._id);
+  const { accessToken, refreshToken } = await generateTokens(user._id);
 
-    res
-      .status(200)
-      .json(
-        new ApiResponse(
-          STATUS_OK,
-          { accessToken, refreshToken },
-          "User verified successfully"
-        )
-      );
-  }
-);
+  res
+    .status(200)
+    .json(new ApiResponse(STATUS_OK, { accessToken, refreshToken }, "User verified successfully"));
+});
 
-export const loginUser = asyncHandler(
-  async (req: Request, res: Response): Promise<void> => {
-    const { email, password } = req.body;
+/*------------------- Login -------------------*/
 
-    if (!email || !password)
-      throw new ApiError(STATUS_BAD_REQUEST, "Email and Password are required");
+export const loginUser = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+  if (!email || !password)
+    throw new ApiError(STATUS_BAD_REQUEST, "Email and Password are required");
 
-    if (!user)
-      throw new ApiError(STATUS_NOT_FOUND, "Email and Password is incorrect");
+  const user = await User.findOne({ email });
 
-    if (!(await user.correctPassword(user.password, password)))
-      throw new ApiError(STATUS_UNAUTHORIZED, "Invalid user credentials");
+  if (!user) throw new ApiError(STATUS_NOT_FOUND, "Email and Password is incorrect");
 
-    const { accessToken, refreshToken } = await generateTokens(user._id);
-    res
-      .status(200)
-      .json(
-        new ApiResponse(
-          STATUS_OK,
-          { accessToken, refreshToken },
-          "Login Successful"
-        )
-      );
-  }
-);
+  if (!(await user.correctPassword(user.password, password)))
+    throw new ApiError(STATUS_UNAUTHORIZED, "Invalid user credentials");
 
-export const forgotPassword = asyncHandler(
-  async (req: Request, res: Response): Promise<void> => {
-    //Get the Email from the User
+  const { accessToken, refreshToken } = await generateTokens(user._id);
+  res
+    .status(200)
+    .json(new ApiResponse(STATUS_OK, { accessToken, refreshToken }, "Login Successful"));
+});
 
-    const { email } = req.body;
-    const user = await User.findOne({ email });
+/*------------------- Forgot Password -------------------*/
 
-    if (!user) throw new ApiError(STATUS_NOT_FOUND, "User not found");
+export const forgotPassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  //Get the Email from the User
 
-    const resetToken = await user.createPasswordResetToken();
-    /*
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+
+  if (!user) throw new ApiError(STATUS_NOT_FOUND, "User not found");
+
+  const resetToken = await user.createPasswordResetToken();
+  /*
       We have to generate a seperate reset token for this
       not the jwt token which used for the authentication
       
       can be crated using packages -> crypto
   */
 
-    const resetURL = `${env.CORS_ORIGIN}/reset-password/${resetToken}`;
+  const resetURL = `${env.CORS_ORIGIN}/reset-password/${resetToken}`;
 
-    console.log(resetToken);
+  console.log(resetToken);
 
-    sendMail({
-      to: user.email,
-      html: resetPasswordEmailTemplate(resetURL,user.firstName),
-    });
+  sendMail({
+    to: user.email,
+    html: resetPasswordEmailTemplate(resetURL, user.firstName),
+  });
 
+  res.status(200).json(new ApiResponse(STATUS_OK, {}, "Reset token sent successfully"));
+});
 
+/*------------------- Reset Password -------------------*/
+export const resetPassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { password } = req.body;
 
-    res
-      .status(200)
-      .json(new ApiResponse(STATUS_OK, {}, "Reset token sent successfully"));
-  }
-);
+  if (!password) throw new ApiError(STATUS_BAD_REQUEST, "Password is required");
 
-export const resetPassword = asyncHandler(
-  async (req: Request, res: Response): Promise<void> => {
-    const { password } = req.body;
+  const resetToken = req.params.token;
 
-    if (!password)
-      throw new ApiError(STATUS_BAD_REQUEST, "Password is required");
+  const hashedResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
 
-    const resetToken = req.params.token;
+  const user = await User.findOne({
+    passwordResetToken: hashedResetToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
 
-    const hashedResetToken = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
+  if (!user) throw new ApiError(STATUS_NOT_FOUND, "Token is Invalid or Expired");
 
-    const user = await User.findOne({
-      passwordResetToken: hashedResetToken,
-      passwordResetExpires: { $gt: Date.now() },
-    });
+  const hashedPassword = await genHash(password);
 
-    if (!user)
-      throw new ApiError(STATUS_NOT_FOUND, "Token is Invalid or Expired");
+  user.password = hashedPassword;
+  user.passwordChangedAt = new Date();
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
 
-    const hashedPassword = await genHash(password);
+  await user.save();
 
-    user.password = hashedPassword;
-    user.passwordChangedAt = new Date();
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
+  // TODO => You can send an email about informing the password reset
 
-    await user.save();
+  const token = genAccessToken(user._id);
 
-    // TODO => You can send an email about informing the password reset
+  res
+    .status(200)
+    .json(new ApiResponse(STATUS_OK, { accessToken: token }, "Password Reseted Successfully"));
 
-    const token = genAccessToken(user._id);
-
-    res
-      .status(200)
-      .json(
-        new ApiResponse(STATUS_OK, { accessToken:token }, "Password Reseted Successfully")
-      );
-
-    /*
+  /*
       So here we changed the user's password to the new password 
       and after that we are logging in the user automatically by
       generating the token and sending it to the frontend
@@ -298,9 +270,9 @@ export const resetPassword = asyncHandler(
       You can do this or you can even ask the user to login with
       the new password again for even more security
   */
-  }
-);
+});
 
+/*------------------- Refresh Token -------------------*/
 export const refreshAccessToken = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.headers.auth as string;
@@ -309,10 +281,7 @@ export const refreshAccessToken = asyncHandler(
       throw new ApiError(STATUS_BAD_REQUEST, "Refresh Token is required");
     }
 
-    const decodedToken = jwt.verify(
-      refreshToken,
-      env.JWT_SECRET
-    ) as IJWT_PAYLOAD;
+    const decodedToken = jwt.verify(refreshToken, env.JWT_SECRET) as IJWT_PAYLOAD;
 
     const user = await User.findById(decodedToken?.id);
 

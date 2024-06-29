@@ -1,47 +1,65 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import ChatContext from "../context/ChatContext";
-import { CurrentChatType, MessageType } from "../types/chat.types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "../api/axios";
+import { CurrentChatType } from "../types/chat.types";
+import { useMessageMutation } from "../hooks/chat";
+import socket from "../utils/socket";
+import { SocketEvents } from "../utils/constants";
+import useAuth from "../hooks/context/useAuth";
 type ChatProiderProps = {
   children: ReactNode;
 };
 
 const ChatProider = ({ children }: ChatProiderProps) => {
-  const client = useQueryClient();
+  const { user } = useAuth();
 
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const [currentChat, setCurrentChat] = useState<CurrentChatType | null>(null);
 
-  const { mutate } = useMutation<MessageType, Error, string>({
-    mutationFn: async (message: string) => {
-      if (!currentChat) return;
-      const response = await api.post(`/chat/${currentChat.chatId}`, {
-        message,
-      });
-      return response.data.data;
-    },
-    onSuccess: (data) => {
-      client.setQueryData(["chat"], (prev: MessageType[]) => [...prev, data]);
-    },
-  });
+  const { mutate } = useMessageMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isTyping) {
+      setIsTyping(true);
+      socket.emit(SocketEvents.START_TYPING, user?._id);
+    }
+
     setMessage(e.target.value);
   };
 
+
+
   const handleSendMessage = () => {
-    if (!message.trim()) return;
-    // socket.emit(SocketEvents.CHAT_MESSAGE, {message ,id : currentChat?._id});
-    mutate(message);
+    if (!message.trim() || !currentChat || !currentChat?.chatId) return;
+
+    mutate({ message, chatId: currentChat.chatId });
     setMessage("");
   };
 
+
+  
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSendMessage();
     }
   };
+
+  useEffect(() => {
+    let typingTimeout: NodeJS.Timeout;
+
+    if (isTyping) {
+      typingTimeout = setTimeout(() => {
+        setIsTyping(false);
+        if (socket) {
+          socket.emit(SocketEvents.STOP_TYPING, user?._id);
+        }
+      }, 2000);
+    }
+
+    return () => {
+      clearTimeout(typingTimeout);
+    };
+  }, [isTyping]);
 
   return (
     <ChatContext.Provider

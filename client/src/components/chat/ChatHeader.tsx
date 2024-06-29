@@ -1,11 +1,13 @@
 import { CaretDown, MagnifyingGlass, Phone, VideoCamera } from "phosphor-react";
 import { CurrentChatType } from "../../types/chat.types";
+import { useSocket } from "../../hooks/context/useSocket";
 
 type ChatHeaderProps = {
   currentChat: CurrentChatType;
 };
 
 const ChatHeader = ({ currentChat }: ChatHeaderProps) => {
+  const { onlineUsers, typingUsers } = useSocket();
 
   return (
     <nav className="flex justify-between bg-[#F8FAFF] px-4">
@@ -16,10 +18,14 @@ const ChatHeader = ({ currentChat }: ChatHeaderProps) => {
           alt=""
         />
         <div className="flex flex-col justify-center">
-          <h4 className="text-[13px] font-semibold text-[#030303]">
-            {currentChat?.firstName}
-          </h4>
-          <p className="text-xs text-[#7C7C7D]">Online</p>
+          <h4 className="text-[13px] font-semibold text-[#030303]">{currentChat?.firstName}</h4>
+          <p className="text-xs text-[#7C7C7D]">
+            {!onlineUsers.includes(currentChat?._id)
+              ? "offline"
+              : typingUsers.includes(currentChat?._id)
+              ? "typing..."
+              : "online"}
+          </p>
         </div>
       </div>
       <div className="flex items-center gap-6">

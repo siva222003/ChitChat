@@ -1,7 +1,7 @@
 import { DashboardType, DashboardEnum } from "../types/chat.types";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import Conversations from "../components/dashboard/Conversations";
-import Groups from "../components/dashboard/Groups";
+import Groups from "../components/groups/Groups";
 import Contacts from "../components/dashboard/Contacts";
 
 type SideNavLGProps = {
@@ -11,7 +11,7 @@ type SideNavLGProps = {
 
 const SideNavLG = ({ currentTab, setCurrentTab }: SideNavLGProps) => {
   return (
-    <nav className="bg-[#F8FAFF] px-6 py-6  max-h-screen overflow-auto">
+    <nav className="bg-[#F8FAFF] px-6 py-6  max-h-screen overflow-auto max-md:hidden">
       <DashboardHeader setCurrentTab={setCurrentTab} currentTab={currentTab} />
 
       {currentTab === DashboardEnum.Conversations && <Conversations />}

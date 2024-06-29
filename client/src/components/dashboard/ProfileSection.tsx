@@ -1,4 +1,4 @@
-import useAuth from "../../hooks/useAuth";
+import useAuth from "../../hooks/context/useAuth";
 
 export default function ProfileSection() {
   const { user } = useAuth();

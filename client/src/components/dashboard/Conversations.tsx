@@ -1,30 +1,16 @@
-import { ConversationType } from "../../types/chat.types";
 import ConversationList from "../ui/dashboard/ConversationList";
-import { useQuery } from "@tanstack/react-query";
-import { api } from "../../api/axios";
 import DashboardLoader from "../ui/loaders/DashboardLoader";
+import { useConversationsQuery } from "../../hooks/chat";
 
 type ConversationsProps = {
   archived?: boolean;
 };
 
 const Conversations = ({ archived = false }: ConversationsProps) => {
+  const { conversations, isLoading, isError, isSuccess } =
+    useConversationsQuery();
 
-  const {
-    data: conversations,
-    isLoading,
-    isError,
-    isSuccess,
-  } = useQuery<ConversationType[]>({
-    queryKey: ["conversations"],
-    queryFn: async () => {
-      const { data } = await api.get("/chat");
-      return data.data;
-    },
-    retry: 1,
-    staleTime: Infinity,
-  });
-
+  
   if (isLoading) return <DashboardLoader />;
 
   if (isError) return <div>Error fetching data</div>;

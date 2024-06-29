@@ -2,32 +2,31 @@ import React, { useEffect } from "react";
 import ChatHeader from "../../components/chat/ChatHeader";
 import Messages from "../../components/chat/Messages";
 import SendMessage from "../../components/chat/ChatInput";
-import useChat from "../../hooks/useChat";
+import useChat from "../../hooks/context/useChat";
 import NoChats from "../../components/ui/chat/NoChats";
-import { useSocket } from "../../hooks/useSocket";
-import useAuth from "../../hooks/useAuth";
+import { useSocket } from "../../hooks/context/useSocket";
+import useAuth from "../../hooks/context/useAuth";
 import socket from "../../utils/socket";
 import { SocketEvents } from "../../utils/constants";
 import { useQueryClient } from "@tanstack/react-query";
-import { MessageType } from "../../types/chat.types";
+import { ConversationType, MessageType } from "../../types/chat.types";
 
 const Chat = React.memo(() => {
   const client = useQueryClient();
 
   const { currentChat } = useChat();
   const { user } = useAuth();
-  const { setOnlineUsers } = useSocket();
+  const { setOnlineUsers, setTypingUsers } = useSocket();
 
   useEffect(() => {
     socket.connect();
 
     const handleConnect = () => {
-      console.log("Connected to server");
-      socket.emit(SocketEvents.ONLINE, user);
+      console.log("User Connected");
     };
 
     const handleDisconnect = () => {
-      console.log("Disconnected from server");
+      console.log("User Disconnected");
     };
 
     const handleOnlineUsers = (users: string[]) => {
@@ -35,11 +34,12 @@ const Chat = React.memo(() => {
       setOnlineUsers(users);
     };
 
-    const handleFriendRequest = ({
-      notifications,
-    }: {
-      notifications: string[];
-    }) => {
+    const handleTyping = (users: string[]) => {
+      console.log("Typing Users", users);
+      setTypingUsers(users);
+    };
+
+    const handleFriendRequest = ({ notifications }: { notifications: string[] }) => {
       client.setQueryData(["user"], (data: any) => {
         return { ...data, notifications };
       });
@@ -47,20 +47,31 @@ const Chat = React.memo(() => {
     };
 
     const handleAcceptRequest = () => {
-      client.invalidateQueries({ queryKey: ["conversations"] });
+      client.invalidateQueries({ queryKey: ["chats"] });
     };
 
     const handleChatMessage = (message: MessageType) => {
-     
-      if(message.sender !== user?._id){
+      if (message.sender !== user?._id && currentChat?.chatId === message.chat) {
         client.setQueryData(["chat"], (prev: MessageType[]) => [...prev, message]);
       }
-   
+
+      client.setQueryData(["chats"], (prev: ConversationType[]) => {
+        if (!prev) return;
+
+        const newChats = prev.map((chat: ConversationType) => {
+          if (chat._id === message.chat) {
+            return { ...chat, lastMessage: message.message };
+          }
+          return chat;
+        });
+        return newChats;
+      });
     };
 
     socket.on(SocketEvents.CONNECT, handleConnect);
     socket.on(SocketEvents.DISCONNECT, handleDisconnect);
     socket.on(SocketEvents.ONLINE, handleOnlineUsers);
+    socket.on(SocketEvents.TYPING, handleTyping);
     socket.on(SocketEvents.FRIEND_REQUEST, handleFriendRequest);
     socket.on(SocketEvents.ACCEPT_REQUEST, handleAcceptRequest);
     socket.on(SocketEvents.CHAT_MESSAGE, handleChatMessage);
@@ -68,6 +79,7 @@ const Chat = React.memo(() => {
       socket.off(SocketEvents.CONNECT, handleConnect);
       socket.off(SocketEvents.DISCONNECT, handleDisconnect);
       socket.off(SocketEvents.ONLINE, handleOnlineUsers);
+      socket.off(SocketEvents.TYPING, handleTyping);
       socket.off(SocketEvents.FRIEND_REQUEST, handleFriendRequest);
       socket.off(SocketEvents.ACCEPT_REQUEST, handleAcceptRequest);
       socket.off(SocketEvents.CHAT_MESSAGE, handleChatMessage);

@@ -7,7 +7,7 @@ import {
   // Image,
   // FileText,
 } from "phosphor-react";
-import useChat from "../../hooks/useChat";
+import useChat from "../../hooks/context/useChat";
 import EmojiPicker from "emoji-picker-react";
 import { EmojiStyle } from "emoji-picker-react";
 import { useEffect, useRef, useState } from "react";
@@ -25,6 +25,8 @@ const SendMessage = () => {
     handleSendMessage,
     setMessage,
   } = useChat();
+  
+
   
   const [emojiPicker, setEmojiPicker] = useState<boolean>(false);
   const [attachments, setAttachments] = useState<boolean>(false);

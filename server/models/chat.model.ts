@@ -23,8 +23,7 @@ const chatSchema = new mongoose.Schema(
       },
     ],
     lastMessage: {
-      type: Types.ObjectId,
-      ref: "Message",
+      type: String,
     },
     messages: [
       {

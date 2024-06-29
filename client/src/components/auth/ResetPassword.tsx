@@ -1,44 +1,11 @@
-import { SubmitHandler, useForm } from "react-hook-form";
-import { ResetPasswordFormTypes, resetPasswordSchema } from "../../types/auth.types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import {  LOGIN_ROUTE } from "../../utils/constants";
+import { Link } from "react-router-dom";
+import { LOGIN_ROUTE } from "../../utils/constants";
 import AuthLoader from "../ui/loaders/AuthLoader";
-import { resetPassword } from "../../providers/AuthProvider";
-import { AxiosError } from "axios";
-import { useMutation } from "@tanstack/react-query";
+import { useResetPasswordMutation } from "../../hooks/auth";
 
 const ResetPassword = () => {
-  const navigate = useNavigate();
-
-  const { resetToken = "" } = useParams();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<ResetPasswordFormTypes>({
-    defaultValues: { password: "", confirmPassword: "" },
-    resolver: zodResolver(resetPasswordSchema),
-  });
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: resetPassword,
-    onSuccess: () => {
-      console.log("Password Reset Successful");
-      navigate(LOGIN_ROUTE, { replace: true });
-    },
-    onError: (err: AxiosError) => {
-      console.error(
-        "Error from server:",
-        (err.response?.data as Error).message
-      );
-    },
-  });
-
-  const onSubmit: SubmitHandler<ResetPasswordFormTypes> = (data) => {
-    mutate({ data, resetToken });
-  };
+  const { errors, handleSubmit, isPending, isSubmitting, onSubmit, register } =
+    useResetPasswordMutation();
 
   return (
     <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">

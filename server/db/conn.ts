@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import env from '../utils/validateEnv'
+import env from "../utils/validateEnv";
 const MONGO_URI = env.MONGO_URI;
 
 export const connectToMongo = async () => {
@@ -7,7 +7,7 @@ export const connectToMongo = async () => {
     await mongoose.connect(MONGO_URI);
     console.log("MONG0DB CONNECTED");
   } catch (err) {
-    console.log('Some Error occured in DB connection',err)
-    process.exit(1)
+    console.log("Some Error occured in DB connection", err);
+    process.exit(1);
   }
 };

@@ -1,47 +1,19 @@
-import { SubmitHandler, useForm } from "react-hook-form";
-import {
-  ForgotPasswordFormTypes,
-  forgotPasswordSchema,
-} from "../../types/auth.types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  LOGIN_ROUTE,
-  RESET_PASSWORD_EMAIL_SENT_ROUTE,
-} from "../../utils/constants";
-import { useMutation } from "@tanstack/react-query";
-import { forgotPassword } from "../../providers/AuthProvider";
-import { AxiosError } from "axios";
+import { Link } from "react-router-dom";
+import { LOGIN_ROUTE } from "../../utils/constants";
+
 import AuthLoader from "../ui/loaders/AuthLoader";
+import { useForgotPasswordMutation } from "../../hooks/auth";
 
 const ForgotPassword = () => {
-  const navigate = useNavigate();
-
   const {
-    register,
+    errors,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<ForgotPasswordFormTypes>({
-    defaultValues: { email: "" },
-    resolver: zodResolver(forgotPasswordSchema),
-  });
-  const { mutate, isPending, isError } = useMutation({
-    mutationFn: forgotPassword,
-    onSuccess: () => {
-      console.log("Successfully sent reset link to email");
-      navigate(RESET_PASSWORD_EMAIL_SENT_ROUTE, { replace: true });
-    },
-    onError: (err: AxiosError) => {
-      console.error(
-        "Error from server:",
-        (err.response?.data as Error).message
-      );
-    },
-  });
-
-  const onSubmit: SubmitHandler<ForgotPasswordFormTypes> = (data) => {
-    mutate(data);
-  };
+    isError,
+    isPending,
+    isSubmitting,
+    onSubmit,
+    register,
+  } = useForgotPasswordMutation();
 
   return (
     <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">

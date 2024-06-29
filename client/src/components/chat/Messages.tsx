@@ -1,25 +1,15 @@
 import { useEffect, useRef } from "react";
-import useChat from "../../hooks/useChat";
+import useChat from "../../hooks/context/useChat";
 import MessageList from "./MessageList";
-import TextMessage from "../ui/messages/TextMessage";
-import { useQuery } from "@tanstack/react-query";
-import { api } from "../../api/axios";
-import { MessageType } from "../../types/chat.types";
+import { useConversationQuery } from "../../hooks/chat";
+import StartChat from "../ui/chat/StartChat";
 
 const Messages = () => {
-
   const messageRef = useRef<HTMLDivElement | null>(null);
 
   const { currentChat } = useChat();
 
-  const { data: messages, refetch } = useQuery<MessageType[]>({
-    queryKey: ["chat"],
-    queryFn: async () => {
-      const response = await api.get(`/chat/${currentChat?.chatId}`);
-      return response.data.data.messages;
-    },
-    // refetchOnMount: true,
-  });
+  const { messages, refetch } = useConversationQuery(currentChat);
 
   useEffect(() => {
     if (currentChat) {
@@ -31,7 +21,6 @@ const Messages = () => {
     if (messageRef.current !== null) {
       messageRef.current.scrollIntoView({ behavior: "smooth" });
     }
-    console.log('hello')
   }, [messages]);
 
   return (
@@ -39,9 +28,7 @@ const Messages = () => {
       {messages && messages.length > 0 ? (
         <MessageList messages={messages} messageRef={messageRef} />
       ) : (
-        <div className="flex flex-col items-center justify-center h-full">
-          <TextMessage message="Start the Conversation" isOwnMsg={true} />
-        </div>
+        <StartChat />
       )}
     </div>
   );

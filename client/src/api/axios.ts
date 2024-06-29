@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_BASE_API_URL,
@@ -6,9 +7,11 @@ export const api = axios.create({
 
 //headers
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.auth = `Bearer ${token}`;
+  const { getItem } = useLocalStorage();
+
+  const token = getItem("accessToken");
+  if (token && token.token) {
+    config.headers.auth = `Bearer ${token.token}`;
   }
   return config;
 });

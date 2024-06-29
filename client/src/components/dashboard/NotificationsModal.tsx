@@ -7,36 +7,29 @@ import {
 } from "@headlessui/react";
 import { InboxStackIcon } from "@heroicons/react/24/outline";
 import FriendRequestCard from "../ui/dashboard/FriendRequestCard";
-import { useQuery } from "@tanstack/react-query";
-import { NotificationsType } from "../../types/user.types";
-import { api } from "../../api/axios";
 import DashboardLoader from "../ui/loaders/DashboardLoader";
 import EmptyNotifications from "../ui/dashboard/EmptyNotifications";
+import { useNotificationsQuery } from "../../hooks/user";
 
 interface NotificationsModalProps {
   isModalOpen: boolean;
-  handleOk: () => void;
-  handleCancel: () => void;
+  setOpenNotifications: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function NotificationsModal({
   isModalOpen,
-  handleOk,
-  handleCancel,
+  setOpenNotifications,
 }: NotificationsModalProps) {
-  const { data, isLoading, isRefetching } = useQuery<NotificationsType[]>({
-    queryKey: ["notifications"],
-    queryFn: async () => {
-      const response = await api.get("/user/notifications");
-      return response.data.data;
-    },
-    retry: 1,
-    staleTime: Infinity,
-  });
+
+  
+  const { data, isLoading, isRefetching } = useNotificationsQuery();
 
   return (
     <Transition show={isModalOpen}>
-      <Dialog className="relative z-10" onClose={handleCancel}>
+      <Dialog
+        className="relative z-10"
+        onClose={() => setOpenNotifications(false)}
+      >
         <TransitionChild
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -98,14 +91,14 @@ export default function NotificationsModal({
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                    onClick={handleOk}
+                    onClick={() => setOpenNotifications(false)}
                   >
                     Accept all
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={handleCancel}
+                    onClick={() => setOpenNotifications(false)}
                     data-autofocus
                   >
                     Back

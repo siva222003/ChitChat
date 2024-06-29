@@ -1,53 +1,16 @@
-import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { RegisterFormTypes, registerSchema } from "../../types/auth.types";
-import { useMutation } from "@tanstack/react-query";
-import { signup } from "../../providers/AuthProvider";
-import { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
-import { VERIFY_OTP_ROUTE } from "../../utils/constants";
 import AuthLoader from "../ui/loaders/AuthLoader";
-import { toast } from "react-toastify";
+import { useSignUpMutation } from "../../hooks/auth";
 
 const SignUp = () => {
-  const navigate = useNavigate();
-
   const {
-    register,
+    errors,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<RegisterFormTypes>({
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      about: "",
-    },
-    resolver: zodResolver(registerSchema),
-  });
-
-  const { mutate, isPending, isError } = useMutation({
-    mutationFn: signup,
-    onSuccess: (data) => {
-      if (data.success) {
-        toast.success(data.message);
-        navigate(VERIFY_OTP_ROUTE);
-      }
-    },
-    onError: (err: AxiosError) => {
-      console.error(
-        "Error from server:",
-        (err.response?.data as Error).message
-      );
-    },
-  });
-
-  const onSubmit: SubmitHandler<RegisterFormTypes> = (data) => {
-    console.log("Clicked")
-    mutate(data);
-    localStorage.setItem("email", data.email);
-  };
+    isError,
+    isPending,
+    isSubmitting,
+    onSubmit,
+    register,
+  } = useSignUpMutation();
 
   return (
     <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -121,11 +84,9 @@ const SignUp = () => {
             />
           </div>
           {errors.email && (
-            <p className="my-2 text-sm text-red-500">
-              {errors.email.message}
-            </p>
+            <p className="my-2 text-sm text-red-500">{errors.email.message}</p>
           )}
-          { !errors.email && isError && (
+          {!errors.email && isError && (
             <p className="my-2 text-sm text-red-500">
               User with this email already exists.
             </p>
@@ -180,7 +141,7 @@ const SignUp = () => {
         <div>
           <button
             type="submit"
-            disabled={isSubmitting  || isPending}
+            disabled={isSubmitting || isPending}
             className="flex w-full justify-center rounded-md bg-[#1964FF] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-6"
           >
             {isPending ? <AuthLoader /> : "Create Account"}

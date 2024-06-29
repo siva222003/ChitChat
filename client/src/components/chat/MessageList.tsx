@@ -1,4 +1,4 @@
-import useAuth from "../../hooks/useAuth";
+import useAuth from "../../hooks/context/useAuth";
 import { MessageType } from "../../types/chat.types";
 import TextMessage from "../ui/messages/TextMessage";
 
@@ -11,7 +11,7 @@ const MessageList = ({ messages, messageRef }: MessageListProps) => {
   const { user } = useAuth();
 
   return (
-    <div ref={messageRef}>
+    <div >
       {messages.map((message, index) => {
         if (message.message) {
           return (
@@ -19,11 +19,13 @@ const MessageList = ({ messages, messageRef }: MessageListProps) => {
               key={index}
               message={message.message}
               isOwnMsg={message.sender === user?._id}
+              status={message.status}
             />
           );
         }
         return null;
       })}
+      <div ref={messageRef}></div>
     </div>
   );
 };

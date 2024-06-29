@@ -1,4 +1,4 @@
-import useNotificationsModal from "../../../hooks/useNotificationsModal";
+import { useNotificationsMutation } from "../../../hooks/user";
 import { NotificationsType } from "../../../types/user.types";
 
 interface FriendRequestCardProps {
@@ -6,7 +6,7 @@ interface FriendRequestCardProps {
 }
 
 const FriendRequestCard = ({ request }: FriendRequestCardProps) => {
-  const { handleFriendRequest } = useNotificationsModal();
+  const { mutate } = useNotificationsMutation();
 
   return (
     <div className="flex justify-between bg-gray-200 px-2 py-2 items-center rounded-lg my-3">
@@ -17,19 +17,18 @@ const FriendRequestCard = ({ request }: FriendRequestCardProps) => {
       <div className="flex gap-2">
         <button
           onClick={() =>
-            handleFriendRequest({
+            mutate({
               friendId: request?.sender?._id,
               accept: true,
             })
           }
           className="px-3 py-2 bg-blue-500 text-white rounded-lg text-sm"
         >
-          {" "}
           Accept
         </button>
         <button
           onClick={() =>
-            handleFriendRequest({
+            mutate({
               friendId: request?.sender?._id,
               accept: false,
             })

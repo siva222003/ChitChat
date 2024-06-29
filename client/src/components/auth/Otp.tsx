@@ -1,46 +1,17 @@
-import { SubmitHandler, useForm } from "react-hook-form";
-import {  OtpFormTypes, otpSchmea } from "../../types/auth.types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { verifyOtp } from "../../providers/AuthProvider";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {  useNavigate } from "react-router-dom";
-import {  HOME_ROUTE } from "../../utils/constants";
-import { AxiosError } from "axios";
 import AuthLoader from "../ui/loaders/AuthLoader";
 import { isObjectEmpty } from "../../utils/helper";
+import { useVerifyOtpMutation } from "../../hooks/auth";
 
 const Otp = () => {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-
   const {
-    register,
+    errors,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<OtpFormTypes>({
-    defaultValues: { otp: "" },
-    resolver: zodResolver(otpSchmea),
-  });
-
-  const { mutate, isPending, isError } = useMutation({
-    mutationFn: verifyOtp,
-    onSuccess: (data) => {
-      localStorage.setItem("accessToken", data.data.accessToken || "");
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-      navigate(HOME_ROUTE);
-    },
-    onError: (err: AxiosError) => {
-      console.error(
-        "Error from server:",
-        (err.response?.data as Error).message
-      );
-    },
-  });
-
-  const onSubmit: SubmitHandler<OtpFormTypes> = (data) => {
-    console.log(data);
-    mutate(data);
-  };
+    isError,
+    isPending,
+    isSubmitting,
+    onSubmit,
+    register,
+  } = useVerifyOtpMutation();
 
   return (
     <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -69,10 +40,9 @@ const Otp = () => {
           </div>
           {errors.otp && (
             <p className="my-2 text-sm text-red-500">{errors.otp.message}</p>
-          )}  
+          )}
         </div>
 
-  
         <div>
           {isError && isObjectEmpty(errors) && (
             <p className="text-sm text-red-500">
@@ -87,7 +57,6 @@ const Otp = () => {
           >
             {isPending ? <AuthLoader /> : "Create Account"}
           </button>
-   
         </div>
       </form>
     </div>

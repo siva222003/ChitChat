@@ -1,31 +1,13 @@
 import { ContactType } from "../../../types/user.types";
 import { Popconfirm } from "antd";
-import { useMutation } from "@tanstack/react-query";
-import { api } from "../../../api/axios";
+import { useFriendRequestMutation } from "../../../hooks/user";
 interface ContactCardProps {
   contact: ContactType;
 }
 
 const ContactCard = ({ contact }: ContactCardProps) => {
 
-  const { mutate } = useMutation({
-
-    mutationFn: async (data: { friendId: string }) => {
-      const response = await api.post("/user/add-friend", data);
-      return response.data;
-    },
-    // onSuccess: (data) => {
-    //   localStorage.setItem("accessToken", data.data.accessToken || "");
-    //   queryClient.invalidateQueries({ queryKey: ["contact"] });
-    //   navigate(HOME_ROUTE);
-    // },
-    // onError: (err: AxiosError) => {
-    //   console.error(
-    //     "Error from server:",
-    //     (err.response?.data as Error).message
-    //   );
-    // },
-  });
+  const {mutate} = useFriendRequestMutation();
 
   const handleConfirm = () => {
     if (contact) {

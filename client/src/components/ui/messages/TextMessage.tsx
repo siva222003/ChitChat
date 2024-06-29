@@ -1,11 +1,13 @@
-import { Check } from "phosphor-react";
+import { Check, Clock } from "phosphor-react";
+import { MessageStatus } from "../../../types/chat.types";
 
 interface TextMessageProps {
   message: string;
   isOwnMsg: boolean;
+  status: MessageStatus;
 }
 
-const TextMessage = ({ message, isOwnMsg }: TextMessageProps) => {
+const TextMessage = ({ message, isOwnMsg, status }: TextMessageProps) => {
   return (
     <>
       {/* <div className="bg-messageRight px-3 py-3 my-2 text-white w-fit rounded-lg ml-auto flex gap-1">
@@ -21,7 +23,11 @@ const TextMessage = ({ message, isOwnMsg }: TextMessageProps) => {
       >
         <p className="text-sm">{message}</p>
         <p className="text-[10px] flex-1 self-end">11:07 pm</p>
-        <Check size={16} className="ml-auto self-end" />
+        {status === MessageStatus.Optimistic ? (
+          <Clock size={17} className="ml-auto self-end text-white" />
+        ) : (
+          <Check size={17} className="ml-auto self-end text-white" />
+        )}
       </div>
 
       {/* <div className="bg-messageRight px-3 py-3 my-2 text-white w-fit rounded-lg ml-auto flex gap-1">

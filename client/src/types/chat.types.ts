@@ -31,8 +31,16 @@ export enum DashboardEnum {
 }
 
 export type MessageType = {
+  _id: string;
   chat: string;
   sender: string;
   message: string;
-  status: string;
+  status: MessageStatus;
 };
+
+export enum MessageStatus {
+  Sent = "sent",
+  Delivered = "delivered",
+  Read = "read",
+  Optimistic = "optimistic",
+}

@@ -26,6 +26,7 @@ export type ContactType = {
   avatar: string;
 };
 
+
 export type NotificationsType = {
   _id: string;
   sender: {

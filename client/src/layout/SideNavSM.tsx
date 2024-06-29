@@ -1,10 +1,9 @@
 import { ChatCircleDots, Users, Phone, Gear, Bell } from "phosphor-react";
 import logo from "../assets/images/logo.svg";
 import { DashboardType, DashboardEnum } from "../types/chat.types";
-import useAuth from "../hooks/useAuth";
+import useAuth from "../hooks/context/useAuth";
 import NotificationsModal from "../components/dashboard/NotificationsModal";
 import { useState } from "react";
-import useNotificationsModal from "../hooks/useNotificationsModal";
 import UserProfileOverlay from "../components/dashboard/UserProfileOverlay";
 
 type SideNavSMProps = {
@@ -13,16 +12,10 @@ type SideNavSMProps = {
 };
 
 const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
-
-
   const { user } = useAuth();
 
-  const { isModalOpen, showModal, handleOk, handleCancel } =
-    useNotificationsModal();
-
-    
   const [openProfile, setOpenProfile] = useState(false);
-
+  const [openNotifications, setOpenNotifications] = useState(false);
 
   return (
     <nav className="flex px-3 border-2 h-screen flex-col items-center justify-between bg-[#F0F4FA]">
@@ -70,7 +63,7 @@ const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
 
       <div className="flex  flex-col items-center gap-4 my-10">
         <div
-          onClick={showModal}
+          onClick={() => setOpenNotifications(true)}
           className="h-10 w-10 cursor-pointer  flex justify-center items-center relative"
         >
           {user?.notifications?.length !== 0 && (
@@ -79,11 +72,10 @@ const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
             </span>
           )}
           <Bell size={23} />
-          {isModalOpen && (
+          {openNotifications && (
             <NotificationsModal
-              isModalOpen={isModalOpen}
-              handleOk={handleOk}
-              handleCancel={handleCancel}
+              isModalOpen={openNotifications}
+              setOpenNotifications={setOpenNotifications}
             />
           )}
         </div>

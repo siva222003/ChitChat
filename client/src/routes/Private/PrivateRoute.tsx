@@ -1,5 +1,5 @@
 import { ReactNode, Suspense } from "react";
-import useAuth from "../../hooks/useAuth";
+import useAuth from "../../hooks/context/useAuth";
 import { Navigate } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import { LOGIN_ROUTE } from "../../utils/constants";

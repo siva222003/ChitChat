@@ -16,6 +16,7 @@ import PrivateRoute from "./Private/PrivateRoute";
 import PublicRoute from "./Public/PublicRoute";
 import NotFound from "../components/ui/NotFound";
 import ResetPasswordEmailSent from "../components/ui/auth/ResetPasswordEmailSent";
+import Test from "../pages/Test";
 
 
 const Home = React.lazy(() => import("../pages/Home"));
@@ -92,6 +93,8 @@ const Router = () => {
       />
 
       <Route path={NOT_FOUND_ROUTE} element={<NotFound />} />
+        
+      <Route path="/test" element={<Test />} />
     </Routes>
   );
 };

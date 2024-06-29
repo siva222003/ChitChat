@@ -1,48 +1,21 @@
-import { SubmitHandler, useForm } from "react-hook-form";
-import { LoginFormTypes, loginSchema } from "../../types/auth.types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { login } from "../../providers/AuthProvider";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
-import { FORGOT_PASSWORD_ROUTE, HOME_ROUTE } from "../../utils/constants";
-import { AxiosError } from "axios";
+import { Link } from "react-router-dom";
+import { FORGOT_PASSWORD_ROUTE } from "../../utils/constants";
 import AuthLoader from "../ui/loaders/AuthLoader";
 import { isObjectEmpty } from "../../utils/helper";
+import { useLoginMutation } from "../../hooks/auth";
 
 const Login = () => {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-
+  
   const {
-    register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginFormTypes>({
-    defaultValues: { email: "", password: "" },
-    resolver: zodResolver(loginSchema),
-  });
-
-  const { mutate, isPending, isError ,error} = useMutation({
-    mutationFn: login,
-    onSuccess: (data) => {
-      localStorage.setItem("accessToken", data.data.accessToken || "");
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-      navigate(HOME_ROUTE);
-    },
-    onError: (err: AxiosError) => {
-      console.error(
-        "Error from server:",
-        (err.response?.data as Error).message
-      );
-    },
-  });
-
-  const onSubmit: SubmitHandler<LoginFormTypes> = (data) => {
-    console.log(data);
-    mutate(data);
-  };
-
-
+    onSubmit,
+    register,
+    isError,
+    errors,
+    error,
+    isPending,
+    isSubmitting,
+  } = useLoginMutation();
 
   return (
     <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -112,10 +85,8 @@ const Login = () => {
         <div>
           {isError && isObjectEmpty(errors) && (
             <p className="text-sm text-red-500">
-              {
-                 (error.response?.data as Error).message ||
-                  "Something went wrong"
-              }
+              {(error?.response?.data as Error)?.message ||
+                "Something went wrong"}
             </p>
           )}
 
