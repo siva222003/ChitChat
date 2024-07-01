@@ -216,7 +216,7 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response): 
       can be crated using packages -> crypto
   */
 
-  const resetURL = `${env.CORS_ORIGIN}/reset-password/${resetToken}`;
+  const resetURL = `${env.CORS_ORIGIN_PRODUCTION}/reset-password/${resetToken}`;
 
   console.log(resetToken);
 
