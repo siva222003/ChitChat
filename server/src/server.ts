@@ -12,7 +12,7 @@ const server = http.createServer(app);
 
 export const io = new Server(server, {
   cors: {
-    origin: env.CORS_ORIGIN_DEV,
+    origin: env.CORS_ORIGIN_PRODUCTION,
     credentials: true,
   },
 });
