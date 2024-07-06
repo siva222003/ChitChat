@@ -8,6 +8,7 @@ const url = "https://chitchat-production-78a7.up.railway.app";
 const token = localStorage.getItem("accessToken");
 
 const socket = socketio(url, {
+  transports: ['websocket'],
   withCredentials: true,
   auth: token ? JSON.parse(token) : {},
 });
