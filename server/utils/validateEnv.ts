@@ -7,8 +7,7 @@ export default cleanEnv(process.env,{
     JWT_SECRET : str(),
     SERVICE_MAIL : email(),
     SERVICE_PASSWORD : str(),
-    CORS_ORIGIN_PRODUCTION : str(),
-    CORS_ORIGIN_DEV : str(),
+    CORS_ORIGIN : str(),
     ACCESS_TOKEN_EXPIRY : str(),
     REFRESH_TOKEN_EXPIRY : str(),
 })
