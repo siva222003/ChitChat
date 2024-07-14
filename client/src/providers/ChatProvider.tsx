@@ -2,14 +2,17 @@ import { ReactNode, useEffect, useState } from "react";
 import ChatContext from "../context/ChatContext";
 import { CurrentChatType } from "../types/chat.types";
 import { useMessageMutation } from "../hooks/chat";
-import socket from "../utils/socket";
 import { SocketEvents } from "../utils/constants";
 import useAuth from "../hooks/context/useAuth";
+import { useSocket } from "../hooks/context/useSocket";
 type ChatProiderProps = {
   children: ReactNode;
 };
 
 const ChatProider = ({ children }: ChatProiderProps) => {
+
+  const { socket } = useSocket();
+
   const { user } = useAuth();
 
   const [message, setMessage] = useState("");
@@ -19,6 +22,9 @@ const ChatProider = ({ children }: ChatProiderProps) => {
   const { mutate } = useMessageMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+    if(!currentChat || !currentChat?.chatId || !socket) return;
+
     if (!isTyping) {
       setIsTyping(true);
       socket.emit(SocketEvents.START_TYPING, user?._id);
@@ -27,8 +33,6 @@ const ChatProider = ({ children }: ChatProiderProps) => {
     setMessage(e.target.value);
   };
 
-
-
   const handleSendMessage = () => {
     if (!message.trim() || !currentChat || !currentChat?.chatId) return;
 
@@ -36,8 +40,6 @@ const ChatProider = ({ children }: ChatProiderProps) => {
     setMessage("");
   };
 
-
-  
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSendMessage();

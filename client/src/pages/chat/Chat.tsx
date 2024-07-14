@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import ChatHeader from "../../components/chat/ChatHeader";
 import Messages from "../../components/chat/Messages";
 import SendMessage from "../../components/chat/ChatInput";
@@ -6,7 +6,6 @@ import useChat from "../../hooks/context/useChat";
 import NoChats from "../../components/ui/chat/NoChats";
 import { useSocket } from "../../hooks/context/useSocket";
 import useAuth from "../../hooks/context/useAuth";
-import socket from "../../utils/socket";
 import { SocketEvents } from "../../utils/constants";
 import { useQueryClient } from "@tanstack/react-query";
 import { ConversationType, MessageType } from "../../types/chat.types";
@@ -16,9 +15,18 @@ const Chat = React.memo(() => {
 
   const { currentChat } = useChat();
   const { user } = useAuth();
-  const { setOnlineUsers, setTypingUsers } = useSocket();
+  const { setOnlineUsers, setTypingUsers, socket } = useSocket();
+
+  const currentChatRef = useRef(currentChat);
 
   useEffect(() => {
+    currentChatRef.current = currentChat;
+  }, [currentChat]);
+
+  useEffect(() => {
+    
+    if (!user || !socket) return;
+
     socket.connect();
 
     const handleConnect = () => {
@@ -51,7 +59,7 @@ const Chat = React.memo(() => {
     };
 
     const handleChatMessage = (message: MessageType) => {
-      if (message.sender !== user?._id && currentChat?.chatId === message.chat) {
+      if (message.sender !== user?._id && currentChatRef.current?.chatId === message.chat) {
         client.setQueryData(["chat"], (prev: MessageType[]) => [...prev, message]);
       }
 

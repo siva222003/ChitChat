@@ -3,7 +3,6 @@ const App = () => {
   return (
     <main className="flex font-manrope w-screen">
       <Router />
-
     </main>
   );
 };

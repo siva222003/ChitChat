@@ -8,4 +8,4 @@ export interface IChat {
     messages: Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
-  }
+}
