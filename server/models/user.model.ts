@@ -9,7 +9,7 @@ const friendsSchema = new Schema({
   avatar: String,
 });
 
-const userSchema = new Schema(
+export const userSchema = new Schema(
   {
     firstName: {
       type: String,

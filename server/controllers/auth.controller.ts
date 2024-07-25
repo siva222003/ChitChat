@@ -23,6 +23,7 @@ import {
 import { asyncHandler } from "../utils/asyncHandler";
 import { IJWT_PAYLOAD } from "../interfaces/tokenI";
 import resetPasswordEmailTemplate from "../templates/resetPassword";
+import { userService } from "../src/server";
 
 declare module "express-serve-static-core" {
   export interface Request {
@@ -30,7 +31,7 @@ declare module "express-serve-static-core" {
   }
 }
 
-const generateTokens = async (id: Types.ObjectId) => {
+export const generateTokens = async (id: Types.ObjectId) => {
   try {
     const user = await User.findById(id);
     const accessToken = genAccessToken(id);
@@ -62,43 +63,12 @@ export const registerUser = asyncHandler(
       present in the Schema but not filled by the user
   */
 
-    const existing_user = await User.findOne({ email });
+    const user = await userService.registerUser({ email, password, firstName, lastName });
 
-    if (existing_user && existing_user.verified) {
-      throw new ApiError(STATUS_CONFLICT, "Email already exists");
-    } else if (existing_user) {
-      const hashedPassword = await genHash(password);
-      const modifyObj = { firstName, lastName, password: hashedPassword };
-      await User.findOneAndUpdate({ email }, modifyObj, {
-        new: true,
-        validateModifiedOnly: true,
-      });
+    if (!user) return;
 
-      /*
-        validateModifiedOnly -> If u have any validations set in the mongoose model
-                                then those validators run for only to the properties those who are changing if u set this option to true
-    */
-
-      req.userId = existing_user._id;
-      next();
-    } else {
-      const hashedPassword = await genHash(password);
-      const modifyObj = {
-        firstName,
-        lastName,
-        email,
-        password: hashedPassword,
-        friends: [
-          {
-            id: "660bec4a8c09ef88ed8dbad3",
-            firstName: "Akhil",
-          },
-        ],
-      };
-      const new_user = await User.create(modifyObj);
-      req.userId = new_user._id;
-      next();
-    }
+    req.userId = user._id;
+    next();
   }
 );
 
@@ -106,25 +76,9 @@ export const registerUser = asyncHandler(
 export const sendOtp = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { userId } = req;
 
-  const otp = otpGenerator.generate(4, {
-    upperCaseAlphabets: false,
-    lowerCaseAlphabets: false,
-    specialChars: false,
-  });
+  if (!userId) return;
 
-  const hashed_Otp = await genHash(otp);
-
-  const otp_expiry_time = Date.now() + 10 * 60 * 1000; //* 10 min
-
-  const modifyObj = { otp: hashed_Otp, otp_expiry_time };
-
-  const user = await User.findByIdAndUpdate({ _id: userId }, modifyObj, {
-    new: true,
-  });
-
-  if (!user) throw new ApiError(STATUS_NOT_FOUND, "User doesn't exist");
-
-  //Sending Email to the User's Email with the generated otp
+  const { user, otp } = await userService.sendOtp(userId);
 
   sendMail({
     to: user.email,
@@ -140,37 +94,7 @@ export const verifyOtp = asyncHandler(async (req: Request, res: Response): Promi
 
   console.log(email, otp);
 
-  const user = await User.findOne({
-    email,
-    otp_expiry_time: { $gt: Date.now() },
-  });
-
-  if (!user) throw new ApiError(STATUS_NOT_FOUND, "Email is invalid or OTP expired");
-
-  if (!(await user.correctOtp(user.otp, otp)))
-    throw new ApiError(STATUS_UNAUTHORIZED, "Otp is incorrect. Please try again");
-
-  /*
-      Here we can even create an obj with both verified and otp fields and save
-      their value to the database by using findByIDAndUpdate else we can easily 
-      do the same process like this by changing the retrieved user  
-  */
-
-  user.verified = true;
-  user.otp = undefined;
-
-  /*
-      Here generally we have to set an option to save property of mongoose
-      validateBeforSave -> false
-      this will make sure not to validate before saving as we are setting a 
-      value of a field to undefined which will throw an error but as we already 
-      set the value of this property as string | undefined in the TS interface
-      there is no need in that
-  */
-
-  await user.save();
-
-  const { accessToken, refreshToken } = await generateTokens(user._id);
+  const { accessToken, refreshToken } = await userService.verifyOtp(email, otp);
 
   res
     .status(200)
@@ -182,17 +106,8 @@ export const verifyOtp = asyncHandler(async (req: Request, res: Response): Promi
 export const loginUser = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
-  if (!email || !password)
-    throw new ApiError(STATUS_BAD_REQUEST, "Email and Password are required");
+  const { accessToken, refreshToken } = await userService.loginUser({ email, password });
 
-  const user = await User.findOne({ email });
-
-  if (!user) throw new ApiError(STATUS_NOT_FOUND, "Email and Password is incorrect");
-
-  if (!(await user.correctPassword(user.password, password)))
-    throw new ApiError(STATUS_UNAUTHORIZED, "Invalid user credentials");
-
-  const { accessToken, refreshToken } = await generateTokens(user._id);
   res
     .status(200)
     .json(new ApiResponse(STATUS_OK, { accessToken, refreshToken }, "Login Successful"));
@@ -201,24 +116,9 @@ export const loginUser = asyncHandler(async (req: Request, res: Response): Promi
 /*------------------- Forgot Password -------------------*/
 
 export const forgotPassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-  //Get the Email from the User
-
   const { email } = req.body;
-  const user = await User.findOne({ email });
 
-  if (!user) throw new ApiError(STATUS_NOT_FOUND, "User not found");
-
-  const resetToken = await user.createPasswordResetToken();
-  /*
-      We have to generate a seperate reset token for this
-      not the jwt token which used for the authentication
-      
-      can be crated using packages -> crypto
-  */
-
-  const resetURL = `${env.CORS_ORIGIN}/reset-password/${resetToken}`;
-
-  console.log(resetToken);
+  const { user, resetURL } = await userService.forgotPassword(email);
 
   sendMail({
     to: user.email,
@@ -232,45 +132,16 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response): 
 export const resetPassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { password } = req.body;
 
-  if (!password) throw new ApiError(STATUS_BAD_REQUEST, "Password is required");
-
   const resetToken = req.params.token;
 
-  const hashedResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-
-  const user = await User.findOne({
-    passwordResetToken: hashedResetToken,
-    passwordResetExpires: { $gt: Date.now() },
-  });
-
-  if (!user) throw new ApiError(STATUS_NOT_FOUND, "Token is Invalid or Expired");
-
-  const hashedPassword = await genHash(password);
-
-  user.password = hashedPassword;
-  user.passwordChangedAt = new Date();
-  user.passwordResetToken = undefined;
-  user.passwordResetExpires = undefined;
-
-  await user.save();
-
-  // TODO => You can send an email about informing the password reset
-
-  const token = genAccessToken(user._id);
+  const token = await userService.resetPassword(password, resetToken);
 
   res
     .status(200)
     .json(new ApiResponse(STATUS_OK, { accessToken: token }, "Password Reseted Successfully"));
-
-  /*
-      So here we changed the user's password to the new password 
-      and after that we are logging in the user automatically by
-      generating the token and sending it to the frontend
-
-      You can do this or you can even ask the user to login with
-      the new password again for even more security
-  */
 });
+
+
 
 /*------------------- Refresh Token -------------------*/
 export const refreshAccessToken = asyncHandler(

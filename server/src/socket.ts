@@ -59,7 +59,6 @@ export const socketConnection = (
       onlineUsers.add(user._id.toString());
       onlineUserIds.set(user._id.toString(), socket.id);
       io.emit(ONLINE, Array.from(onlineUsers));
-
       /*---------------- Sart Typing ------------------*/
       socket.on(START_TYPING, (receiverId: string) => {
         const receiverSocketId = onlineUserIds.get(receiverId);

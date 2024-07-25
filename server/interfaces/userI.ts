@@ -1,6 +1,6 @@
-import { Schema, Types } from "mongoose";
+import { Document, Schema, Types } from "mongoose";
 
-export interface IUser {
+export interface IUser extends Document {
   firstName: string;
   lastName: string;
   about: string;
@@ -15,7 +15,7 @@ export interface IUser {
   createdAt: Date;
   updatedAt: Date;
   otp: string | undefined;
-  otp_expiry_time: Date;
+  otp_expiry_time: number;
   friends: { id: Types.ObjectId; firstName: string,avatar : string }[];
   notifications: { sender: Types.ObjectId }[];
   socketId: string;

@@ -6,8 +6,10 @@ import http from "http";
 import { Server } from "socket.io";
 import env from "../utils/validateEnv";
 import app from "./app";
-import { connectToMongo } from "../db/conn";
+import { connectToMongo, DbService } from "../db/conn";
 import { socketConnection } from "./socket";
+import { UserRepository } from "../repositories/auth.repository";
+import { UserService } from "../services/auth.service";
 const server = http.createServer(app);
 
 export const io = new Server(server, {
@@ -23,7 +25,12 @@ socketConnection(io);
 
 const PORT = 3000;
 
-connectToMongo()
+const dbService = new DbService();
+const userRepository = new UserRepository(dbService);
+export const userService = new UserService(userRepository);
+
+dbService
+  .connect()
   .then(() => {
     server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);

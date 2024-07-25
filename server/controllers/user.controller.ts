@@ -85,6 +85,7 @@ export const sendFriendRequest = asyncHandler(
     await friend.save();
     res.json(new ApiResponse(200, {}, "Friend Requset Sent successfully"));
 
+    console.log("onlineUserIds", onlineUserIds);
     io.to(onlineUserIds.get(friendId) as string).emit(FRIEND_REQUEST, {
       notifications: friend.notifications,
     });
@@ -109,6 +110,7 @@ export const acceptFriendRequest = asyncHandler(
       throw new ApiError(STATUS_NOT_FOUND, "User or Friend not found");
     }
 
+
     const friendRequest = await FriendRequest.findOne({
       sender: friendId,
       receiver: id,
@@ -127,6 +129,7 @@ export const acceptFriendRequest = asyncHandler(
       res.json(
         new ApiResponse(STATUS_OK, { notifications: user.notifications }, "Friend request rejected")
       );
+
       return;
     }
 
