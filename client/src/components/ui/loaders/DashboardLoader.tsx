@@ -1,6 +1,6 @@
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { RotatingLines } from "react-loader-spinner";
+// import { RotatingLines } from "react-loader-spinner";
 const DashboardLoader = () => {
   return (
     <Spin
