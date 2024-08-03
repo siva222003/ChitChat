@@ -8,9 +8,6 @@ export type UserType = {
   avatar: string;
   friends: FriendsType[];
   notifications: string[];
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
 };
 
 export type FriendsType = {

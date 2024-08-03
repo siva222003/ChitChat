@@ -14,10 +14,9 @@ import {
 } from "./constants";
 import { User } from "../models";
 import jwt from "jsonwebtoken";
-import env from "../utils/validateEnv";
 import { IJWT_PAYLOAD } from "../interfaces/tokenI";
 import { Types } from "mongoose";
-import { getSocketId } from "../utils/helper";
+import { env, getSocketId } from "../helpers";
 
 interface SocketUser extends IUser {
   _id: Types.ObjectId;
@@ -65,7 +64,7 @@ export const socketConnection = (
         if (receiverSocketId) {
           typingUsers.add(user._id.toString());
           const userSocketIds = getSocketId(onlineUserIds);
-          io.to(userSocketIds).emit(TYPING, Array.from(typingUsers) );
+          io.to(userSocketIds).emit(TYPING, Array.from(typingUsers));
         }
       });
 
@@ -83,10 +82,10 @@ export const socketConnection = (
       /*---------------- User Disconnected ------------------*/
       socket.on(DISCONNECT, () => {
         if (user) {
-          onlineUsers.delete(user._id.toString())
+          onlineUsers.delete(user._id.toString());
           onlineUserIds.delete(user._id.toString());
-          typingUsers.delete(user._id.toString());        
-          }
+          typingUsers.delete(user._id.toString());
+        }
         io.emit(ONLINE, Array.from(onlineUsers));
         io.emit(TYPING, Array.from(typingUsers));
       });

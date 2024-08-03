@@ -53,7 +53,7 @@ export const userSchema = new Schema(
       type: String,
     },
     otp_expiry_time: {
-      type: Date,
+      type: Number,
     },
 
     friends: [friendsSchema],
@@ -69,10 +69,7 @@ export const userSchema = new Schema(
   { timestamps: true }
 );
 
-userSchema.methods.correctPassword = async (
-  password: string,
-  enteredPassword: string
-) => {
+userSchema.methods.correctPassword = async (password: string, enteredPassword: string) => {
   const match = await bcrypt.compare(enteredPassword, password);
   return match;
 };
@@ -89,10 +86,7 @@ userSchema.methods.createPasswordResetToken = async function () {
       of Hex values and store that in resetToken
   */
 
-  const hashedResetToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
+  const hashedResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
   // Hash that string
 
   this.passwordResetToken = hashedResetToken;

@@ -2,11 +2,9 @@ import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
 import { CHAT_MESSAGE, STATUS_BAD_REQUEST, STATUS_OK } from "../src/constants";
-import { User } from "../models";
-import { Chat } from "../models/chat.model";
 import { ApiResponse } from "../utils/ApiResponse";
-import { Message } from "../models/message.model";
 import { onlineUserIds } from "../src/socket";
+import { chatService } from "../src/server";
 
 /*---------------------- @CHATS ---------------------*/
 
@@ -15,13 +13,9 @@ import { onlineUserIds } from "../src/socket";
 export const getAllChats = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const userId = req.userId;
 
-  const chats = await Chat.find({ members: userId }, { isGroupChat: false })
-    .populate("members", "firstName avatar")
-    .select("-messages -__v -isGroupChat");
+  if (!userId) return;
 
-  if (!chats) {
-    throw new ApiError(STATUS_BAD_REQUEST, "No chats found");
-  }
+  const chats = await chatService.getAllChats(userId);
 
   res.status(200).json(new ApiResponse(200, chats, "Successfully retrieved all chats"));
 });
@@ -30,47 +24,36 @@ export const getAllChats = asyncHandler(async (req: Request, res: Response): Pro
 
 export const getChat = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { chatId } = req.params;
-  const chat = await Chat.findById(chatId)
-    .select("-__v -isGroupChat -members -createdAt -updatedAt -_id -isArchived")
-    .populate("messages");
 
-  if (!chat) {
-    throw new ApiError(STATUS_BAD_REQUEST, "Chat not found");
-  }
+  const chat = await chatService.getChat(chatId);
+
   res.status(200).json(new ApiResponse(200, chat, "Successfully retrieved chat"));
 });
 
 /*---------------- Delete Chat  ------------------*/
 
+export const deleteChat = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { chatId } = req.params;
+
+  const chat = await chatService.deleteChat(chatId);
+
+  res.status(200).json(new ApiResponse(200, chat, "Successfully deleted chat"));
+});
+
 /*---------------------- @MESSAGES ---------------------*/
 
 //create message
-//edit message
-//delete message
 
 export const sendMessage = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { message } = req.body;
   const { chatId } = req.params;
   const userId = req.userId;
 
-  const chat = await Chat.findById(chatId);
-
-  if (!chat) {
-    throw new ApiError(STATUS_BAD_REQUEST, "Chat not found");
+  if (!message || !chatId || !userId) {
+    throw new ApiError(STATUS_BAD_REQUEST, "Invalid request");
   }
 
-  const newMessage = new Message({
-    sender: userId,
-    chat: chatId,
-    message,
-    status: "sent",
-  });
-
-  await newMessage.save();
-
-  chat.messages.push(newMessage._id);
-  chat.lastMessage = newMessage.message;
-  await chat.save();
+  const { newMessage, chat } = await chatService.sendMessage(userId, chatId, message);
 
   res.status(200).json(new ApiResponse(STATUS_OK, newMessage, "Message sent successfully"));
 
@@ -83,6 +66,9 @@ export const sendMessage = asyncHandler(async (req: Request, res: Response): Pro
 
   req.app.get("io").to(membersSocketIds).emit(CHAT_MESSAGE, newMessage);
 });
+
+//edit message
+//delete message
 
 /*---------------------- @GROUPS ---------------------*/
 //create group

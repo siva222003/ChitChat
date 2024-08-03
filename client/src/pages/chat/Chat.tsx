@@ -27,7 +27,7 @@ const Chat = React.memo(() => {
     
     if (!user || !socket) return;
 
-    socket.connect();
+      socket.connect();
 
     const handleConnect = () => {
       console.log("User Connected");
@@ -48,6 +48,9 @@ const Chat = React.memo(() => {
     };
 
     const handleFriendRequest = ({ notifications }: { notifications: string[] }) => {
+
+      console.log("Friend Request", notifications);
+
       client.setQueryData(["user"], (data: any) => {
         return { ...data, notifications };
       });
@@ -91,9 +94,9 @@ const Chat = React.memo(() => {
       socket.off(SocketEvents.FRIEND_REQUEST, handleFriendRequest);
       socket.off(SocketEvents.ACCEPT_REQUEST, handleAcceptRequest);
       socket.off(SocketEvents.CHAT_MESSAGE, handleChatMessage);
-      socket.disconnect();
+
     };
-  }, []);
+  }, [socket]);
 
   if (currentChat === null) return <NoChats />;
 

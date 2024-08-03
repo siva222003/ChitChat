@@ -6,6 +6,7 @@ import {
   getNotifications,
   getAllUsers,
   acceptFriendRequest,
+  removeFriend,
 } from "../controllers/user.controller";
 import { verify } from "../middleware/protect.middleware";
 
@@ -16,17 +17,17 @@ router.get("/all", verify ,getAllUsersExceptFriends);
 router.get("/me", verify, getUser);
 
 
-
-
 /*------ Friend Request --------- */
 router.post("/add-friend", verify, sendFriendRequest);
 router.post("/accept-friend", verify, acceptFriendRequest);
+router.delete ("/remove-friend", verify, removeFriend);
 
 
 /*------ Notifications --------- */
 router.get("/notifications", verify, getNotifications);
 
+
 //testing
 router.get("/all-users", getAllUsers);
 
-export default router;
+export default router;  

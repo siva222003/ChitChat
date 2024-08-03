@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
-import env from "../utils/validateEnv";
 import { NextFunction, Request, Response } from "express";
 import { User } from "../models/index";
 import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asyncHandler";
 import { IJWT_PAYLOAD } from "../interfaces/tokenI";
+import { env } from "../helpers";
 
 export const verify = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {

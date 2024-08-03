@@ -16,11 +16,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <Router>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <ChatProider>
-            <SocketProvider>        
+          <SocketProvider>
+            <ChatProider>
               <App />
-            </SocketProvider>
-          </ChatProider>
+            </ChatProider>
+          </SocketProvider>
         </AuthProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>

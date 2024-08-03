@@ -1,29 +1,12 @@
 import { NextFunction, Response, Request } from "express";
-import { User } from "../models/index";
-import genAccessToken from "../utils/genAccessToken";
-import genRefreshToken from "../utils/genRefreshToken";
-import otpGenerator from "otp-generator";
-import genHash from "../utils/genHash";
-import crypto from "crypto";
 import { Types } from "mongoose";
-import { sendMail } from "../services/mailer";
+import { sendMail } from "../utils/mailer";
 import otpEmailTemplate from "../templates/otp";
-import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";
-import jwt from "jsonwebtoken";
-import env from "../utils/validateEnv";
-import {
-  STATUS_BAD_REQUEST,
-  STATUS_CONFLICT,
-  STATUS_NOT_FOUND,
-  STATUS_OK,
-  STATUS_SERVER_ERROR,
-  STATUS_UNAUTHORIZED,
-} from "../src/constants";
 import { asyncHandler } from "../utils/asyncHandler";
-import { IJWT_PAYLOAD } from "../interfaces/tokenI";
 import resetPasswordEmailTemplate from "../templates/resetPassword";
-import { userService } from "../src/server";
+import { authService } from "../src/server";
+import { STATUS_OK } from "../src/constants";
 
 declare module "express-serve-static-core" {
   export interface Request {
@@ -31,30 +14,11 @@ declare module "express-serve-static-core" {
   }
 }
 
-export const generateTokens = async (id: Types.ObjectId) => {
-  try {
-    const user = await User.findById(id);
-    const accessToken = genAccessToken(id);
-    const refreshToken = genRefreshToken(id);
-
-    if (user) {
-      user.refreshToken = refreshToken;
-      await user.save({ validateBeforeSave: false });
-    }
-    return { accessToken, refreshToken };
-  } catch (error) {
-    throw new ApiError(
-      STATUS_SERVER_ERROR,
-      "Some internal server occured.Couldn't generate the tokens"
-    );
-  }
-};
-
-// SignUp => register -> sendOtp -> verifyOtp
-
 /*------------------- SignUp -------------------*/
+
 export const registerUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    
     const { firstName, lastName, email, password } = req.body;
 
     /*
@@ -63,7 +27,7 @@ export const registerUser = asyncHandler(
       present in the Schema but not filled by the user
   */
 
-    const user = await userService.registerUser({ email, password, firstName, lastName });
+    const user = await authService.registerUser({ email, password, firstName, lastName });
 
     if (!user) return;
 
@@ -73,12 +37,13 @@ export const registerUser = asyncHandler(
 );
 
 /*------------------- Send Otp -------------------*/
+
 export const sendOtp = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { userId } = req;
 
   if (!userId) return;
 
-  const { user, otp } = await userService.sendOtp(userId);
+  const { user, otp } = await authService.sendOtp(userId);
 
   sendMail({
     to: user.email,
@@ -89,12 +54,13 @@ export const sendOtp = asyncHandler(async (req: Request, res: Response): Promise
 });
 
 /*------------------- Verify Otp -------------------*/
+
 export const verifyOtp = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { email, otp } = req.body;
 
   console.log(email, otp);
 
-  const { accessToken, refreshToken } = await userService.verifyOtp(email, otp);
+  const { accessToken, refreshToken } = await authService.verifyOtp(email, otp);
 
   res
     .status(200)
@@ -106,7 +72,7 @@ export const verifyOtp = asyncHandler(async (req: Request, res: Response): Promi
 export const loginUser = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
-  const { accessToken, refreshToken } = await userService.loginUser({ email, password });
+  const { accessToken, refreshToken } = await authService.loginUser({ email, password });
 
   res
     .status(200)
@@ -118,7 +84,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response): Promi
 export const forgotPassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { email } = req.body;
 
-  const { user, resetURL } = await userService.forgotPassword(email);
+  const { user, resetURL } = await authService.forgotPassword(email);
 
   sendMail({
     to: user.email,
@@ -129,41 +95,40 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response): 
 });
 
 /*------------------- Reset Password -------------------*/
+
 export const resetPassword = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { password } = req.body;
 
   const resetToken = req.params.token;
 
-  const token = await userService.resetPassword(password, resetToken);
+  const token = await authService.resetPassword(password, resetToken);
 
   res
     .status(200)
     .json(new ApiResponse(STATUS_OK, { accessToken: token }, "Password Reseted Successfully"));
 });
 
-
-
 /*------------------- Refresh Token -------------------*/
-export const refreshAccessToken = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const refreshToken = req.headers.auth as string;
+// export const refreshAccessToken = asyncHandler(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const refreshToken = req.headers.auth as string;
 
-    if (!refreshToken) {
-      throw new ApiError(STATUS_BAD_REQUEST, "Refresh Token is required");
-    }
+//     if (!refreshToken) {
+//       throw new ApiError(STATUS_BAD_REQUEST, "Refresh Token is required");
+//     }
 
-    const decodedToken = jwt.verify(refreshToken, env.JWT_SECRET) as IJWT_PAYLOAD;
+//     const decodedToken = jwt.verify(refreshToken, env.JWT_SECRET) as IJWT_PAYLOAD;
 
-    const user = await User.findById(decodedToken?.id);
+//     const user = await User.findById(decodedToken?.id);
 
-    if (!user) {
-      throw new ApiError(401, "Invalid refresh token");
-    }
+//     if (!user) {
+//       throw new ApiError(401, "Invalid refresh token");
+//     }
 
-    if (refreshToken !== user?.refreshToken) {
-      throw new ApiError(401, "Refresh token is expired or used");
-    }
+//     if (refreshToken !== user?.refreshToken) {
+//       throw new ApiError(401, "Refresh token is expired or used");
+//     }
 
-    const accessToken = genAccessToken(user._id);
-  }
-);
+//     const accessToken = genAccessToken(user._id);
+//   }
+// );

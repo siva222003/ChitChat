@@ -10,7 +10,6 @@ type ChatProiderProps = {
 };
 
 const ChatProider = ({ children }: ChatProiderProps) => {
-
   const { socket } = useSocket();
 
   const { user } = useAuth();
@@ -22,8 +21,8 @@ const ChatProider = ({ children }: ChatProiderProps) => {
   const { mutate } = useMessageMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-
-    if(!currentChat || !currentChat?.chatId || !socket) return;
+    console.log(socket);
+    if (!currentChat || !currentChat?.chatId || !socket) return;
 
     if (!isTyping) {
       setIsTyping(true);

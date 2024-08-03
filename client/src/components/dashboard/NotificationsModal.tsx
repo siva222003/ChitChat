@@ -1,10 +1,4 @@
-import {
-  Dialog,
-  DialogPanel,
-  DialogTitle,
-  Transition,
-  TransitionChild,
-} from "@headlessui/react";
+import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from "@headlessui/react";
 import { InboxStackIcon } from "@heroicons/react/24/outline";
 import FriendRequestCard from "../ui/dashboard/FriendRequestCard";
 import DashboardLoader from "../ui/loaders/DashboardLoader";
@@ -20,16 +14,11 @@ export default function NotificationsModal({
   isModalOpen,
   setOpenNotifications,
 }: NotificationsModalProps) {
-
-  
   const { data, isLoading, isRefetching } = useNotificationsQuery();
 
   return (
     <Transition show={isModalOpen}>
-      <Dialog
-        className="relative z-10"
-        onClose={() => setOpenNotifications(false)}
-      >
+      <Dialog className="relative z-10" onClose={() => setOpenNotifications(false)}>
         <TransitionChild
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -56,10 +45,7 @@ export default function NotificationsModal({
                 <div className="bg-white px-4 border-b pt-3 pb-2 ">
                   <div className="sm:flex sm:items-center">
                     <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-400 sm:mx-0 sm:h-10 sm:w-10">
-                      <InboxStackIcon
-                        className="h-6 w-6 text-white"
-                        aria-hidden="true"
-                      />
+                      <InboxStackIcon className="h-6 w-6 text-white" aria-hidden="true" />
                     </div>
                     <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                       <DialogTitle

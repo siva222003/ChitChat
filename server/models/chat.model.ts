@@ -3,7 +3,7 @@ import { IChat } from "../interfaces/chatI";
 
 //create a chat schema
 
-const chatSchema = new mongoose.Schema(
+export const chatSchema = new mongoose.Schema(
   {
     isGroupChat: {
       type: Boolean,

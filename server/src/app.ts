@@ -8,8 +8,8 @@ import {router} from '../routes'
 // import xss from "xss-clean";
 // import compression from 'compression'
 import cookieParser  from 'cookie-parser'
-import env from '../utils/validateEnv'
 import { errorHandler } from "../middleware/error.middleware";
+import { env } from "../helpers";
 
 const app = express();
 

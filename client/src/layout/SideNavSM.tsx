@@ -14,6 +14,8 @@ type SideNavSMProps = {
 const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
   const { user } = useAuth();
 
+  console.log(user);
+
   const [openProfile, setOpenProfile] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
 
@@ -27,8 +29,7 @@ const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
           <div
             onClick={() => setCurrentTab(DashboardEnum.Conversations)}
             className={`h-12 w-12 cursor-pointer rounded-xl flex justify-center items-center ${
-              currentTab === DashboardEnum.Conversations ||
-              currentTab === DashboardEnum.Archived
+              currentTab === DashboardEnum.Conversations || currentTab === DashboardEnum.Archived
                 ? "bg-[#5B96F7] text-white"
                 : ""
             }`}
@@ -38,9 +39,7 @@ const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
           <div
             onClick={() => setCurrentTab(DashboardEnum.Groups)}
             className={`h-12 w-12 cursor-pointer rounded-xl  flex justify-center items-center ${
-              currentTab === DashboardEnum.Groups
-                ? "bg-[#5B96F7] text-white"
-                : ""
+              currentTab === DashboardEnum.Groups ? "bg-[#5B96F7] text-white" : ""
             }`}
           >
             <Users size={23} />
@@ -48,9 +47,7 @@ const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
           <div
             onClick={() => setCurrentTab(DashboardEnum.Contacts)}
             className={`h-12 w-12 cursor-pointer rounded-xl  flex justify-center items-center ${
-              currentTab === DashboardEnum.Contacts
-                ? "bg-[#5B96F7] text-white"
-                : ""
+              currentTab === DashboardEnum.Contacts ? "bg-[#5B96F7] text-white" : ""
             }`}
           >
             <Phone size={23} />
@@ -66,7 +63,7 @@ const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
           onClick={() => setOpenNotifications(true)}
           className="h-10 w-10 cursor-pointer  flex justify-center items-center relative"
         >
-          {user?.notifications?.length !== 0 && (
+          {user?.notifications && user.notifications.length !== 0 && (
             <span className="text-xs w-4 h-4 text-center text-white rounded-full bg-red-500 absolute top-0 right-0">
               {user?.notifications?.length}
             </span>
@@ -83,17 +80,10 @@ const SideNavSM = ({ currentTab, setCurrentTab }: SideNavSMProps) => {
           onClick={() => setOpenProfile(true)}
           className="h-14 w-14 rounded-full cursor-pointer  flex justify-center items-center "
         >
-          <img
-            className="inline-block h-14 w-14 rounded-full"
-            src={user?.avatar}
-            alt=""
-          />
+          <img className="inline-block h-14 w-14 rounded-full" src={user?.avatar} alt="" />
         </div>
         {openProfile && (
-          <UserProfileOverlay
-            openProfile={openProfile}
-            setOpenProfile={setOpenProfile}
-          />
+          <UserProfileOverlay openProfile={openProfile} setOpenProfile={setOpenProfile} />
         )}
       </div>
     </nav>

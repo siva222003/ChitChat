@@ -15,12 +15,17 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
     const url = import.meta.env.VITE_BASE_API_URL;
 
     const socket = socketio(url, {
-      transports: ["websocket"],
+      autoConnect: false,
       withCredentials: true,
       auth: token ? JSON.parse(token) : {},
     });
 
     setSocket(socket);
+
+    return () => {
+      socket.disconnect();
+    };
+
   }, [user]);
 
   // console.log("Socket Provider");

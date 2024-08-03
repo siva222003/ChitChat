@@ -18,16 +18,8 @@ import { useEffect, useRef, useState } from "react";
 import { fileInput } from "../../utils/constants";
 
 const SendMessage = () => {
-  const {
-    handleChange,
-    message,
-    handleKeyDown,
-    handleSendMessage,
-    setMessage,
-  } = useChat();
-  
+  const { handleChange, message, handleKeyDown, handleSendMessage, setMessage } = useChat();
 
-  
   const [emojiPicker, setEmojiPicker] = useState<boolean>(false);
   const [attachments, setAttachments] = useState<boolean>(false);
 
@@ -35,10 +27,7 @@ const SendMessage = () => {
   const emojiRef = useRef<HTMLDivElement | null>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (
-      attachmentsRef.current &&
-      !attachmentsRef.current.contains(event.target as Node)
-    ) {
+    if (attachmentsRef.current && !attachmentsRef.current.contains(event.target as Node)) {
       setAttachments(false);
     }
     if (emojiRef.current && !emojiRef.current.contains(event.target as Node)) {
@@ -108,6 +97,7 @@ const SendMessage = () => {
           className="block flex-1  border-0
           bg-transparent sm:text-sm placeholder:text-[#709CE6] sm:leading-6 focus:outline-none"
           placeholder="Write a message..."
+          autoComplete="off"
           onKeyDown={handleKeyDown}
         />
         <div ref={emojiRef} className="relative">

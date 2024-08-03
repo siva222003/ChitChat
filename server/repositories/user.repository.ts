@@ -22,6 +22,25 @@ export class UserRepository {
     return await this._db.userModel.findOne(query);
   }
 
+  async getUserProfile(id: Types.ObjectId): Promise<Partial<IUser> | null> {
+    return this._db.userModel.findById(id).select("firstName lastName email about avatar verified notifications friends");
+  }
+
+  async getUserNotifications(id: Types.ObjectId): Promise<IUser | null> {
+    return this._db.userModel.findById(id).populate({
+      path: "notifications.sender",
+      select: "firstName avatar",
+    });
+  }
+
+  async getAllUsersExceptFriends(id: Types.ObjectId, user: IUser): Promise<IUser[]> {
+    return this._db.userModel
+      .find({
+        _id: { $nin: [...user.friends.map((friend) => friend.id), id] },
+      })
+      .select("firstName about avatar");
+  }
+
   updateUserById(id: Types.ObjectId, modifyObj: Partial<IUser>): Promise<IUser | null> {
     return this._db.userModel.findByIdAndUpdate(id, modifyObj, {
       new: true,

@@ -14,13 +14,7 @@ import {
 } from "../types/auth.types";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  forgotPassword,
-  login,
-  resetPassword,
-  signup,
-  verifyOtp,
-} from "../api/auth";
+import { forgotPassword, login, resetPassword, signup, verifyOtp } from "../api/auth";
 import {
   HOME_ROUTE,
   LOGIN_ROUTE,
@@ -34,8 +28,8 @@ import { useLocalStorage } from "./useLocalStorage";
 
 export const useLoginMutation = () => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const { setItem } = useLocalStorage();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -50,16 +44,13 @@ export const useLoginMutation = () => {
     mutationFn: login,
     onSuccess: (data) => {
       if (data.data.accessToken) {
-        setItem("accessToken", {token:data.data.accessToken});
+        setItem("accessToken", { token: data.data.accessToken });
       }
       queryClient.invalidateQueries({ queryKey: ["user"] });
       navigate(HOME_ROUTE);
     },
     onError: (err: AxiosError) => {
-      console.error(
-        "Error from server:",
-        (err.response?.data as Error).message
-      );
+      console.error("Error from server:", (err.response?.data as Error).message);
     },
   });
 
@@ -99,10 +90,7 @@ export const useForgotPasswordMutation = () => {
       navigate(RESET_PASSWORD_EMAIL_SENT_ROUTE, { replace: true });
     },
     onError: (err: AxiosError) => {
-      console.error(
-        "Error from server:",
-        (err.response?.data as Error).message
-      );
+      console.error("Error from server:", (err.response?.data as Error).message);
     },
   });
 
@@ -139,16 +127,13 @@ export const useVerifyOtpMutation = () => {
     mutationFn: verifyOtp,
     onSuccess: (data) => {
       if (data.data.accessToken) {
-        setItem("accessToken", {token:data.data.accessToken});
+        setItem("accessToken", { token: data.data.accessToken });
       }
       queryClient.invalidateQueries({ queryKey: ["user"] });
       navigate(HOME_ROUTE);
     },
     onError: (err: AxiosError) => {
-      console.error(
-        "Error from server:",
-        (err.response?.data as Error).message
-      );
+      console.error("Error from server:", (err.response?.data as Error).message);
     },
   });
 
@@ -198,17 +183,14 @@ export const useSignUpMutation = () => {
       navigate(VERIFY_OTP_ROUTE);
     },
     onError: (err: AxiosError) => {
-      console.error(
-        "Error from server:",
-        (err.response?.data as Error).message
-      );
+      console.error("Error from server:", (err.response?.data as Error).message);
     },
   });
 
   const onSubmit: SubmitHandler<RegisterFormTypes> = (data) => {
     console.log("Clicked");
     mutate(data);
-    setItem("email", {email:data.email});
+    setItem("email", { email: data.email });
   };
 
   return {
@@ -221,7 +203,6 @@ export const useSignUpMutation = () => {
     isError,
   };
 };
-
 
 /*-----------Reset Password Mutation-----------*/
 export const useResetPasswordMutation = () => {
@@ -245,10 +226,7 @@ export const useResetPasswordMutation = () => {
       navigate(LOGIN_ROUTE, { replace: true });
     },
     onError: (err: AxiosError) => {
-      console.error(
-        "Error from server:",
-        (err.response?.data as Error).message
-      );
+      console.error("Error from server:", (err.response?.data as Error).message);
     },
   });
 

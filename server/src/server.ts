@@ -4,12 +4,17 @@ const envPath = path.resolve(__dirname, "../config.env"); //irrespective CWD pat
 dotenv.config({ path: envPath });
 import http from "http";
 import { Server } from "socket.io";
-import env from "../utils/validateEnv";
 import app from "./app";
-import { connectToMongo, DbService } from "../db/conn";
+import { DbService } from "../db/conn";
 import { socketConnection } from "./socket";
-import { UserRepository } from "../repositories/auth.repository";
-import { UserService } from "../services/auth.service";
+import { UserRepository } from "../repositories/user.repository";
+import { AuthService } from "../services/auth.service";
+import { env } from "../helpers";
+import { UserService } from "../services/user.service";
+import { RequestRepository } from "../repositories/request.repository";
+import { ChatRepository } from "../repositories/chat.repository";
+import { MessageRepository } from "../repositories/message.repository";
+import { ChatService } from "../services/chat.service";
 const server = http.createServer(app);
 
 export const io = new Server(server, {
@@ -26,8 +31,15 @@ socketConnection(io);
 const PORT = 3000;
 
 const dbService = new DbService();
-const userRepository = new UserRepository(dbService);
-export const userService = new UserService(userRepository);
+
+export const userRepository = new UserRepository(dbService);
+export const requestRepository = new RequestRepository(dbService);
+export const chatRepository = new ChatRepository(dbService);
+export const messageRepository = new MessageRepository(dbService);
+
+export const authService = new AuthService(userRepository);
+export const userService = new UserService(userRepository, requestRepository, chatRepository);
+export const chatService = new ChatService(chatRepository, messageRepository);
 
 dbService
   .connect()

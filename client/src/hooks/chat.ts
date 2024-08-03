@@ -55,7 +55,7 @@ export const useMessageMutation = () => {
 
   const { mutate } = useMutation({
     mutationFn: sendMessage,
-    
+
     onMutate: (message) => {
       const optimisticMessage: MessageType = {
         _id: Math.random().toString(),

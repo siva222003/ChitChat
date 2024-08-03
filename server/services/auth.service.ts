@@ -1,16 +1,12 @@
 import { Types } from "mongoose";
-import { generateTokens } from "../controllers/auth.controller";
-import { User } from "../models";
-import { UserRepository } from "../repositories/auth.repository";
+import { UserRepository } from "../repositories/user.repository";
 import { STATUS_BAD_REQUEST, STATUS_NOT_FOUND, STATUS_UNAUTHORIZED } from "../src/constants";
 import { ApiError } from "../utils/ApiError";
-import genHash from "../utils/genHash";
 import otpGenerator from "otp-generator";
-import env from "../utils/validateEnv";
-import genAccessToken from "../utils/genAccessToken";
+import { env, generateTokens, genAccessToken, genHash } from "../helpers";
 import crypto from "crypto";
 
-export class UserService {
+export class AuthService {
   constructor(private readonly authRepo: UserRepository) {}
 
   async registerUser({
@@ -42,7 +38,7 @@ export class UserService {
       return updatedUser;
     }
 
-    const newUser = await User.create({ ...userObj, email });
+    const newUser = await this.authRepo.createUser({ ...userObj, email });
 
     return newUser;
   }
@@ -103,6 +99,7 @@ export class UserService {
   }
 
   async loginUser({ email, password }: { email: string; password: string }) {
+
     if (!email || !password)
       throw new ApiError(STATUS_BAD_REQUEST, "Email and Password are required");
 
@@ -110,7 +107,7 @@ export class UserService {
 
     const user = await this.authRepo.getUser(queryObj);
 
-    if (!user) throw new ApiError(STATUS_NOT_FOUND, "Email and Password is incorrect");
+    if (!user) throw new ApiError(STATUS_NOT_FOUND, "Email or Password is incorrect");
 
     if (!(await user.correctPassword(user.password, password)))
       throw new ApiError(STATUS_UNAUTHORIZED, "Invalid user credentials");

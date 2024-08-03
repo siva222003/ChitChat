@@ -1,4 +1,4 @@
-import { Document, Schema, Types } from "mongoose";
+import { Document, Types } from "mongoose";
 
 export interface IUser extends Document {
   firstName: string;
@@ -16,7 +16,7 @@ export interface IUser extends Document {
   updatedAt: Date;
   otp: string | undefined;
   otp_expiry_time: number;
-  friends: { id: Types.ObjectId; firstName: string,avatar : string }[];
+  friends: { id: Types.ObjectId; firstName: string; avatar: string }[];
   notifications: { sender: Types.ObjectId }[];
   socketId: string;
   correctPassword(password: string, enteredPassword: string): Promise<boolean>;
